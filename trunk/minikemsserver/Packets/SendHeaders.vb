@@ -18,7 +18,11 @@ Public Enum SendHeaders As UShort
 
     LOGIN_STATUS = &H0
     SERVERSTATUS = &H3
+    ALL_CHARLIST = &H8
     SERVERLIST = &HA
+    CHARLIST = &HB
+    CHAR_NAME_RESPONSE = &HD
+    ADD_NEW_CHAR_ENTRY = &HE
     SELECT_WORLD = &H1A
     SEND_RECOMMENDED = &H1B
 End Enum

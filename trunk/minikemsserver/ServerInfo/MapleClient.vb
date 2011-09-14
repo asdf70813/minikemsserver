@@ -20,6 +20,7 @@ Imports System.Threading
 Imports MapleLib.PacketLib
 Imports MapleLib.MapleCryptoLib
 Imports MinikeMSServer.Functions
+Imports MySql.Data.MySqlClient
 
 Public NotInheritable Class MapleClient
 
@@ -46,6 +47,9 @@ Public NotInheritable Class MapleClient
 
     Public AccountName As String = ""
     Public AccountID As Integer = 0
+    Public world As MapleWorld = Nothing
+    Public channel As MapleChannel = Nothing
+    Public LoggedIn As Integer = 0
 
     Public Sub New(ByVal pSocket As Socket, ByVal ReceiveMapleCrypto As MapleCrypto, ByVal SendMapleCrypto As MapleCrypto)
         mSocket = pSocket
@@ -62,6 +66,11 @@ Public NotInheritable Class MapleClient
             Return mHost
         End Get
     End Property
+
+    Public Function loadCharacters() As List(Of MapleCharacter)
+        Dim chars As List(Of MapleCharacter) = MapleCharacter.LoadAllFromDB(Me, world.id)
+        Return chars
+    End Function
 
     Public Sub WaitForData()
         If Not IsNothing(mSocket) Then
@@ -143,11 +152,20 @@ Public NotInheritable Class MapleClient
 
     Public Sub Disconnect()
         If Interlocked.CompareExchange(mDisconnected, 1, 0) = 0 Then
+            If LoggedIn > 0 Then
+                LogOut()
+            End If
             mSocket.Shutdown(SocketShutdown.Both)
             mSocket.Close()
             Console.WriteLine("[{0}] Disconnected", Host)
             Server.ClientDisconnected(Me)
         End If
+    End Sub
+
+    Public Sub LogOut()
+        Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
+        loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE account='" & AccountName & "'")
+        loggedinCon.Dispose()
     End Sub
 
     Friend Sub SendHandshake(ByVal pBuild As UShort, ByVal pReceiveIV As Byte(), ByVal pSendIV As Byte())
