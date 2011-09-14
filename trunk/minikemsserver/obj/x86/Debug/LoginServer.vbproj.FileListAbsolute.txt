@@ -1,0 +1,12 @@
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\bin\Debug\LoginServer.exe
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\bin\Debug\LoginServer.pdb
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\bin\Debug\LoginServer.xml
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\bin\Debug\MapleLib.dll
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\bin\Debug\MapleLib.pdb
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\LoginServer.Resources.resources
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\LoginServer.exe
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\LoginServer.xml
+C:\Users\Gebruiker\documents\visual studio 2010\Projects\ConsoleApplication2\ConsoleApplication2\obj\x86\Debug\LoginServer.pdb
