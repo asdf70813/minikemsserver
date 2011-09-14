@@ -14,21 +14,23 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Imports MapleLib.PacketLib
-Imports MinikeMSServer.RecvHeaders
+Class CharlistRequestHandler
+#Region "IDisposable"
+    Implements IDisposable
+    Private disposedValue As Boolean = False
 
-Public Class RecvPacketHandler
+    Public Sub Dispose() Implements IDisposable.Dispose
 
-    Sub HandlePacket(ByVal packetReader As PacketReader, ByVal c As MapleClient)
-        Dim pHeader As Short = packetReader.ReadShort
-        Dim handler = Nothing
-        Select Case pHeader
-            Case LOGIN_PASSWORD
-                handler = New LoginHandler(packetReader, c)
-            Case SERVERLIST_REQUEST
-                handler = New ServerlistRequestHandler(packetReader, c)
-            Case SERVERSTATUS_REQUEST
-                handler = New ServerStatusRequestHandler(packetReader, c)
-        End Select
+    End Sub
+#End Region
+    Sub New(ByVal packetReader As PacketReader, ByVal c As MapleClient)
+        packetReader.ReadByte()
+        c.world = Server.Worlds(packetReader.ReadByte())
+        c.channel = c.world.Channels(packetReader.ReadByte() + 1)
+        Dim packet As Byte()
+        packet = MaplePacketHandler.sendCharList(c)
+        c.SendPacket(packet)
+        Me.Dispose()
     End Sub
 
 End Class

@@ -75,10 +75,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteArraySegment.vb" />
-    <Compile Include="Handlers\LoginNotices.vb" />
+    <Compile Include="Handlers\CharlistRequestHandler.vb" />
+    <Compile Include="Handlers\CheckCharNameHandler.vb" />
+    <Compile Include="Handlers\CreateCharHandler.vb" />
+    <Compile Include="Handlers\ViewAllCharsHandler.vb" />
     <Compile Include="Packets\MaplePacketHandler.vb" />
     <Compile Include="Handlers\ServerlistRequestHandler.vb" />
     <Compile Include="Handlers\ServerStatusRequestHandler.vb" />
+    <Compile Include="Player\MapleCharacter.vb" />
+    <Compile Include="Player\MapleInventory.vb" />
     <Compile Include="ServerInfo\MapleChannel.vb" />
     <Compile Include="ServerInfo\MapleClient.vb" />
     <Compile Include="Coordinates.vb" />
@@ -104,7 +109,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Packets\RecvHeaders.vb" />
-    <Compile Include="Handlers\RecvPacketHandler.vb" />
+    <Compile Include="Packets\RecvPacketHandler.vb" />
     <Compile Include="ServerInfo\Settings.vb" />
     <Compile Include="ServerInfo\MapleWorld.vb" />
   </ItemGroup>

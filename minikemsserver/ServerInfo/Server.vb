@@ -26,23 +26,23 @@ Module Server
 
     Sub Main()
         Try
+            Console.Title = "MEM_USAGE:"
+            Dim memTimer As New Timers.Timer(500)
+            AddHandler memTimer.Elapsed, AddressOf memTimer_tick
+            memTimer.Start()
+            'Resseting the loggedin values for accounts
+            Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
+            loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE loggedin='1'")
+            loggedinCon.Dispose()
+            'Starting the login server
             LoginServer = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
             LoginServer.Bind(New IPEndPoint(IPAddress.Any, Settings.Port))
             LoginServer.Listen(test)
             BeginLoginListenerAccept(Nothing)
             Console.WriteLine("LoginSever binded to port {0}", Settings.Port)
             Dim i As Integer = 0
-            'While i < Settings.WorldCount
-            '    Dim numberOfChannels As Byte = 19
-            '    Dim world As New MapleWorld(numberOfChannels, i)
-            '    world.Name = "Testing"
-            '    world.Flag = 0
-            '    world.eventMessage = "VB ftw"
-            '    Worlds.Add(world)
-            '    i += 1
-            'End While
             For Each WorldInfo In Settings.WorldSettings
-                Dim world As New MapleWorld(WorldInfo(1), i, WorldInfo(0))
+                Dim world As New MapleWorld(WorldInfo(1), i, WorldInfo(0)) 'Info for channels must be in the sub new
                 world.Name = WorldInfo(2)
                 world.Flag = WorldInfo(3)
                 world.eventMessage = WorldInfo(4)
@@ -118,4 +118,20 @@ pause:  line = Console.ReadLine()
             Return Nothing
         End SyncLock
     End Function
+
+    Private Sub memTimer_tick(ByVal sender As Object, ByVal e As System.Timers.ElapsedEventArgs)
+        Dim mem_usage As Long = CLng(Process.GetCurrentProcess.WorkingSet64 / 1024 / 1024)
+        Dim afterString As String = " KB"
+        If mem_usage > 1024 Then
+            mem_usage = mem_usage / 1024
+            afterString = " MB"
+        End If
+        If mem_usage > 1024 Then 'I hope this wont happen lol
+            mem_usage = mem_usage / 1024
+            afterString = " GB"
+        End If
+        Console.Title = "MEM_USAGE: " & mem_usage.ToString & afterString
+        mem_usage = Nothing
+    End Sub
+
 End Module
