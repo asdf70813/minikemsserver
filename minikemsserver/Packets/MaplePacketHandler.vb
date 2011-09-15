@@ -1,5 +1,6 @@
 ﻿Imports MapleLib.PacketLib
 Imports MinikeMSServer.SendHeaders
+Imports MinikeMSServer.Functions
 
 Public Class MaplePacketHandler
     Public Shared Function LoginSucces(ByVal c As MapleClient) As Byte()
@@ -97,9 +98,13 @@ Public Class MaplePacketHandler
                 addCharEntry(writer, character, False)
             Next
         End If
-        
-        writer.WriteByte(2)
-        writer.WriteInt(12) 'charslots
+        If Settings.pic Then
+            writer.WriteBool(c.hasPic)
+        Else
+            writer.WriteByte(2)
+
+        End If
+        writer.WriteInt(Settings.CharacterSlots) 'charslots
         Return writer.ToArray()
     End Function
 
@@ -228,5 +233,66 @@ Public Class MaplePacketHandler
         Next
         Return writer.ToArray
     End Function
+
+    Shared Function getServerIP(ByVal Ip As Byte(), ByVal port As Short, ByVal charId As Integer) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(SERVER_IP)
+        writer.WriteShort(0)
+        writer.WriteBytes(Ip)
+        writer.WriteShort(port)
+        writer.WriteInt(charId) 'todo, make a less exploitable way to handle this
+        writer.WriteBytes(New Byte() {0, 0, 0, 0, 0})
+        Return writer.ToArray
+    End Function
+
+    Shared Function WrongPic() As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(WRONG_PIC)
+        writer.WriteByte(0)
+        Return writer.ToArray
+    End Function
+
+    Shared Function getAfterLoginError(ByVal reason As Short)
+        Dim writer As New PacketWriter
+        writer.WriteShort(AFTER_LOGIN_ERROR)
+        writer.WriteShort(reason)
+        Return writer.ToArray
+    End Function
+
+    Shared Function getCharInfo(ByVal chr As MapleCharacter)
+        Dim writer As New PacketWriter
+        writer.WriteShort(WARP_TO_MAP)
+        writer.WriteInt(chr.client.channel.id - 1)
+        writer.WriteBytes(New Byte() {1, 1, 0, 0})
+        For i = 1 To 3
+            writer.WriteInt(Random())
+        Next
+        addCharacterInfo(writer, chr)
+        writer.WriteLong(GetTickCount())
+        Return writer.ToArray
+    End Function
+
+    Private Shared Sub addCharacterInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        writer.WriteLong(-1)
+        writer.WriteByte(0)
+        addCharStats(writer, chr)
+        writer.WriteByte(0) 'TODO: buddylist
+        writer.WriteByte(0) 'TODO: Linked characters
+        writer.WriteInt(0) 'TODO: Mesos
+        addInventoryInfo(writer, chr)
+        addSkillInfo(writer, chr)
+        writer.WriteShort(0)
+        addRingInfo(writer, chr)
+        addTeleportInfo(writer, chr)
+        addMonsterBookInfo(writer, chr)
+        writer.WriteShort(0)
+        writer.WriteInt(0)
+    End Sub
+
+    Private Shared Sub addInventoryInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        For i = 1 To 5
+            writer.WriteByte(1) 'TODO: Inventory size left
+        Next
+    End Sub
 
 End Class

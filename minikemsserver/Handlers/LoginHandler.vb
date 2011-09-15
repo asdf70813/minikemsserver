@@ -43,7 +43,7 @@ Public Class LoginHandler
                 Dim packet As Byte() = MaplePacketHandler.LoginSucces(c)
                 c.SendPacket(packet)
                 Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
-                loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='1' WHERE account='" & accountName & "'")
+                loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='1' WHERE account='" & accountName & "' AND id='" & c.AccountID & "'")
                 loggedinCon.Dispose()
                 c.LoggedIn = 1
             Case Else
@@ -71,6 +71,8 @@ Public Class LoginHandler
                 Dim hashedPW As String = ByteArrayToStr(hash.ComputeHash(hStrToByteArray(Password)))
                 If reader.GetString("password").Equals(hashedPW) Then
                     c.AccountID = id
+                    c.pic = reader.GetString("PIC").Replace(" ", "")
+                    c.hasPic = Not c.pic.Equals("")
                     Return login_ok
                 Else
                     Return wrong_pw

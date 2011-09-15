@@ -36,6 +36,14 @@ Public Class RecvPacketHandler
                 handler = New CreateCharHandler(packetReader, c)
             Case VIEW_ALL_CHAR
                 handler = New ViewAllCharsHandler(packetReader, c)
+            Case REGISTER_PIC
+                handler = New RegisterPICHandler(packetReader, c)
+            Case CHAR_SELECT_WITH_PIC
+                handler = New SelectCharHandler(packetReader, c)
+            Case PLAYER_LOGGEDIN
+                handler = New PlayerLoggedinHandler(packetReader, c)
+            Case Else
+                Console.WriteLine("[WARNING] Unhandled Header({0})", Hex(pHeader))
         End Select
     End Sub
 

@@ -12,10 +12,15 @@
 
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
+Imports System.Runtime.InteropServices
 
 Public Class Functions
 
     Private Shared r As New Random()
+
+    <DllImport("kernel32.dll", SetLastError:=True)> _
+    Public Shared Function GetTickCount() As Long
+    End Function
 
     Public Shared Function RandomByte() As Byte
         Randomize()

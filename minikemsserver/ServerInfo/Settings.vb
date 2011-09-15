@@ -20,11 +20,14 @@ Public Class Settings
     Public Shared ReadOnly Ip As IPAddress = IPAddress.Parse("127.0.0.1")
     Public Shared ReadOnly mapleVersion As Short = 83
 
-    '{port,channelcount,name,flag,eventmessage}
+    '{port,channelcount,name,flag,eventmessage,worldip}
     Public Shared ReadOnly WorldSettings As Object() = New Object() {
-        New Object() {7575, 19, "World1", 0, "World one"},
-        New Object() {7576, 13, "World2", 0, "Testing world"}
+        New Object() {7575, 19, "World1", 0, "World one", "127.0.0.1"},
+        New Object() {7576, 13, "World2", 0, "Testing world", "127.0.0.1"}
     }
 
     Public Shared ReadOnly ConnectionString As String = "Database=VBMS;Data Source=127.0.0.1;User Id=root;Password=ZFzf17"
+    Public Shared pic As Boolean = True
+    Public Shared CharacterSlots As Integer = 12
+
 End Class

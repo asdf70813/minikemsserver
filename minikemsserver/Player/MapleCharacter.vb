@@ -127,9 +127,13 @@ Public Class MapleCharacter
         Inventory.save(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys\world" & client.world.id & "\" & Name & ".xml")
     End Sub
 
-    Public Shared Function LoadAllFromDB(ByVal c As MapleClient, ByVal WorldID As Integer) As List(Of MapleCharacter)
+    Public Shared Function LoadFromDB(ByVal c As MapleClient, ByVal WorldID As Integer, Optional ByVal CharID As Integer = -1) As List(Of MapleCharacter)
         Dim CharCon As New MySQLCon(Settings.ConnectionString)
-        Dim reader As MySqlDataReader = CharCon.ReadQuery("SELECT * FROM tbl_characters WHERE accountid='" & c.AccountID & "' AND WorldId='" & WorldID & "'")
+        Dim query = "SELECT * FROM tbl_characters WHERE accountid='" & c.AccountID & "' AND WorldId='" & WorldID & "'"
+        If Not CharID = -1 Then
+            query &= " AND id='" & CharID & "'"
+        End If
+        Dim reader As MySqlDataReader = CharCon.ReadQuery(query)
         Dim charList As New List(Of MapleCharacter)
         While reader.Read
             Dim chr As New MapleCharacter(c, "", True)

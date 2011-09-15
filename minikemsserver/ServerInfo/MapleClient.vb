@@ -23,6 +23,14 @@ Imports MinikeMSServer.Functions
 Imports MySql.Data.MySqlClient
 
 Public NotInheritable Class MapleClient
+#Region "IDisposable"
+    Implements IDisposable
+    Private disposedValue As Boolean = False
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+
+    End Sub
+#End Region
 
     Private Const MAX_RECEIVE_BUFFER As Integer = 16384
 
@@ -47,18 +55,24 @@ Public NotInheritable Class MapleClient
 
     Public AccountName As String = ""
     Public AccountID As Integer = 0
+    Public Player As MapleCharacter
     Public world As MapleWorld = Nothing
     Public channel As MapleChannel = Nothing
     Public LoggedIn As Integer = 0
+    Public hasPic As Boolean
+    Public pic As String
+    Public specialID As Integer
 
-    Public Sub New(ByVal pSocket As Socket, ByVal ReceiveMapleCrypto As MapleCrypto, ByVal SendMapleCrypto As MapleCrypto)
-        mSocket = pSocket
-        _RIV = ReceiveMapleCrypto
-        _SIV = SendMapleCrypto
-        mReceiveBuffer = New Byte(MAX_RECEIVE_BUFFER - 1) {}
-        mHost = DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Address.ToString()
-        Console.WriteLine("[{0}] Connected", mHost)
-        WaitForData()
+    Public Sub New(ByVal pSocket As Socket, ByVal ReceiveMapleCrypto As MapleCrypto, ByVal SendMapleCrypto As MapleCrypto, Optional ByVal cloned As Boolean = False)
+        If Not cloned Then
+            mSocket = pSocket
+            _RIV = ReceiveMapleCrypto
+            _SIV = SendMapleCrypto
+            mReceiveBuffer = New Byte(MAX_RECEIVE_BUFFER - 1) {}
+            mHost = DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Address.ToString()
+            Console.WriteLine("[{0}] Connected", mHost)
+            WaitForData()
+        End If
     End Sub
 
     Public ReadOnly Property Host() As String
@@ -68,7 +82,7 @@ Public NotInheritable Class MapleClient
     End Property
 
     Public Function loadCharacters() As List(Of MapleCharacter)
-        Dim chars As List(Of MapleCharacter) = MapleCharacter.LoadAllFromDB(Me, world.id)
+        Dim chars As List(Of MapleCharacter) = MapleCharacter.LoadFromDB(Me, world.id)
         Return chars
     End Function
 
@@ -159,6 +173,7 @@ Public NotInheritable Class MapleClient
             mSocket.Close()
             Console.WriteLine("[{0}] Disconnected", Host)
             Server.ClientDisconnected(Me)
+            Me.Dispose()
         End If
     End Sub
 
