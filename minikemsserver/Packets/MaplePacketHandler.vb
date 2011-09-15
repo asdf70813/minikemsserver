@@ -252,27 +252,31 @@ Public Class MaplePacketHandler
         Return writer.ToArray
     End Function
 
-    Shared Function getAfterLoginError(ByVal reason As Short)
+    Shared Function getAfterLoginError(ByVal reason As Short) As Byte()
         Dim writer As New PacketWriter
         writer.WriteShort(AFTER_LOGIN_ERROR)
         writer.WriteShort(reason)
         Return writer.ToArray
     End Function
 
-    Shared Function getCharInfo(ByVal chr As MapleCharacter)
+    Shared Function getCharInfo(ByVal chr As MapleCharacter) As Byte()
         Dim writer As New PacketWriter
         writer.WriteShort(WARP_TO_MAP)
-        writer.WriteInt(chr.client.channel.id - 1)
+        writer.WriteInt(chr.client.channel.id)
         writer.WriteBytes(New Byte() {1, 1, 0, 0})
         For i = 1 To 3
             writer.WriteInt(Random())
         Next
         addCharacterInfo(writer, chr)
-        writer.WriteLong(GetTickCount())
+        Dim dateToday As DateTime = New DateTime(1970, 1, 1)
+        Dim date1970 As DateTime = DateTime.Now
+        Dim span As TimeSpan = dateToday - date1970
+        writer.WriteLong(span.TotalMilliseconds * 10000 + 116444592000000000)
         Return writer.ToArray
     End Function
 
     Private Shared Sub addCharacterInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        chr.Inventory.SplitItems()
         writer.WriteLong(-1)
         writer.WriteByte(0)
         addCharStats(writer, chr)
@@ -281,6 +285,7 @@ Public Class MaplePacketHandler
         writer.WriteInt(0) 'TODO: Mesos
         addInventoryInfo(writer, chr)
         addSkillInfo(writer, chr)
+        addQuestInfo(writer, chr)
         writer.WriteShort(0)
         addRingInfo(writer, chr)
         addTeleportInfo(writer, chr)
@@ -293,6 +298,108 @@ Public Class MaplePacketHandler
         For i = 1 To 5
             writer.WriteByte(1) 'TODO: Inventory size left
         Next
+        For Each item As MapleInventory.Items In chr.Inventory.Equiped
+            addItemInfo(writer, item)
+        Next
+        writer.WriteShort(0)
+
+        'TODO: Cash items
+
+        writer.WriteShort(0)
+        'TODO: add stats for weapons
+        'For Each item As MapleInventory.Items In chr.Inventory.Equips
+        '    addItemInfo(writer, item)
+        'Next
+        writer.WriteInt(0)
+        For Each item As MapleInventory.Items In chr.Inventory.Use
+            addItemInfo(writer, item)
+        Next
+        writer.WriteByte(0)
+        For Each item As MapleInventory.Items In chr.Inventory.Setup
+            addItemInfo(writer, item)
+        Next
+        writer.WriteByte(0)
+        For Each item As MapleInventory.Items In chr.Inventory.Etc
+            addItemInfo(writer, item)
+        Next
+        writer.WriteByte(0)
+        For Each item As MapleInventory.Items In chr.Inventory.Cash
+            addItemInfo(writer, item)
+        Next
+    End Sub
+
+    Private Shared Sub addItemInfo(ByVal writer As PacketWriter, ByVal item As MapleInventory.Items)
+        addItemInfo(writer, item, False, False)
+    End Sub
+
+    Private Shared Sub addItemInfo(ByVal writer As PacketWriter, ByVal item As MapleInventory.Items, ByVal cash As Boolean, ByVal zeroPosition As Boolean)
+        If Not zeroPosition Then
+            If item.type = MapleInventory.Types.Equipped Then
+                writer.WriteShort(item.position * -1)
+            Else
+                writer.WriteByte(item.position)
+            End If
+        End If
+        writer.WriteByte(item.type)
+        writer.WriteInt(item.id)
+        writer.WriteBool(cash)
+        'TODO: add cash/pet/ring handling
+        addExpirationTime(writer, item.expiration)
+        'TODO: add pet handling 
+        If item.type <> MapleInventory.Types.Equipped Then
+            writer.WriteShort(item.quantity)
+            writer.WriteMapleString(item.owner)
+            writer.WriteShort(item.flag)
+        End If
+
+        'TODO: Equips and stats
+    End Sub
+
+    Private Shared Sub addExpirationTime(ByVal writer As PacketWriter, ByVal expiration As Long)
+        addExpirationTime(writer, expiration, True)
+    End Sub
+
+    Private Shared Sub addExpirationTime(ByVal writer As PacketWriter, ByVal expiration As Long, ByVal addzero As Boolean)
+        If addzero Then
+            writer.WriteByte(0)
+        End If
+        If expiration < 1 Then
+            writer.WriteInt(400967355)
+            writer.WriteByte(2)
+        Else
+            'TODO: add expiration
+        End If
+    End Sub
+
+    Private Shared Sub addSkillInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        writer.WriteByte(0)
+        'TODO: add skills
+        writer.WriteShort(0)
+        'TODO: add cooldown
+        writer.WriteShort(0)
+    End Sub
+
+    Private Shared Sub addRingInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        writer.WriteShort(0)
+        writer.WriteShort(0)
+        writer.WriteShort(0)
+    End Sub
+
+    Private Shared Sub addTeleportInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        'TODO: add tele rocks
+    End Sub
+
+    Private Shared Sub addMonsterBookInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        'TODO add MonsterBookInfo
+        writer.WriteInt(0)
+        writer.WriteByte(0)
+        writer.WriteShort(0)
+    End Sub
+
+    Private Shared Sub addQuestInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        'TODO: add quests
+        writer.WriteShort(0)
+        writer.WriteShort(0)
     End Sub
 
 End Class

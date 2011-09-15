@@ -88,6 +88,7 @@ Public Class MapleWorld
                 Dim _SIV As New MapleCrypto(sendIV, Settings.mapleVersion)
                 Dim client As New MapleClient(pArguments.AcceptSocket, _RIV, _SIV)
                 client.SendHandshake(Settings.mapleVersion, receiveIV, sendIV)
+                client.world = Me
                 Clients.Add(client)
                 BeginLoginListenerAccept(pArguments)
             ElseIf pArguments.SocketError <> SocketError.OperationAborted Then
@@ -100,6 +101,7 @@ Public Class MapleWorld
     End Sub
 
     Function getClientBySpecialID(ByVal ID As Integer) As MapleClient
+        Console.WriteLine("Gets here")
         SyncLock PendingClients
             For Each client As MapleClient In PendingClients
                 If client.specialID = ID Then

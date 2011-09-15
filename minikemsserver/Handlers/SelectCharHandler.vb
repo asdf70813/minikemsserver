@@ -39,6 +39,7 @@ Class SelectCharHandler
                 pendingClient.Player = MapleCharacter.LoadFromDB(pendingClient, pendingClient.world.id, charId)(0)
                 pendingClient.channel = c.channel
                 pendingClient.specialID = (charId * 7) Mod 5
+                Console.WriteLine("Special id [{0}]", pendingClient.specialID)
                 c.world.PendingClients.Add(pendingClient)
                 packet = MaplePacketHandler.getServerIP(c.world.ipToByteArray(), c.world.port, pendingClient.specialID)
             Else

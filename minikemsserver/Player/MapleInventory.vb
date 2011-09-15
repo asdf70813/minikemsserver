@@ -3,6 +3,7 @@ Imports System.IO
 
 Public Class MapleInventory
     Public ItemList As New List(Of Items)
+    Public Splitted As Boolean = False
     Public Equiped As New List(Of Items)
     Public Equips As New List(Of Items)
     Public Use As New List(Of Items)
@@ -12,6 +13,10 @@ Public Class MapleInventory
     Public slotLimit = 0
 
     Public Sub save(ByVal FileName As String)
+        If Splitted Then
+            UnSplitItems()
+            Splitted = False
+        End If
         Try
             Dim writer As New XmlTextWriter(FileName, System.Text.Encoding.UTF8)
             writer.WriteStartElement("ItemList")
@@ -73,7 +78,51 @@ Public Class MapleInventory
     End Sub
 
     Public Sub SplitItems()
+        For Each item As Items In ItemList
+            Select Case item.type
+                Case Types.Equipped
+                    Equiped.Add(item)
+                Case Types.Equip
+                    Equips.Add(item)
+                Case Types.Use
+                    Use.Add(item)
+                Case Types.Setup
+                    Setup.Add(item)
+                Case Types.Etc
+                    Etc.Add(item)
+                Case Types.Cash
+                    Cash.Add(item)
+            End Select
+        Next
+        Splitted = True
+        ItemList.Clear()
+    End Sub
 
+    Public Sub UnSplitItems()
+        For Each item As Items In Equiped
+            ItemList.Add(item)
+        Next
+        Equiped.Clear()
+        For Each item As Items In Equips
+            ItemList.Add(item)
+        Next
+        Equips.Clear()
+        For Each item As Items In Use
+            ItemList.Add(item)
+        Next
+        Use.Clear()
+        For Each item As Items In Setup
+            ItemList.Add(item)
+        Next
+        Setup.Clear()
+        For Each item As Items In Etc
+            ItemList.Add(item)
+        Next
+        Etc.Clear()
+        For Each item As Items In Cash
+            ItemList.Add(item)
+        Next
+        Cash.Clear()
     End Sub
 
     Public Class Items
@@ -87,7 +136,7 @@ Public Class MapleInventory
         Public giftFrom As String = ""
 
         Sub New(ByVal _type As Short, ByVal _id As Integer, ByVal _posistion As Short, ByVal _quantity As Short)
-            type = _type
+            Type = _type
             id = _id
             position = _posistion
             quantity = _quantity
