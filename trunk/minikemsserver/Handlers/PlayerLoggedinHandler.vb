@@ -34,10 +34,14 @@ Class PlayerLoggedinHandler
             c.channel = pendingClient.channel
             c.world.PendingClients.Remove(pendingClient)
             c.Player.client = c
+            Dim packet As Byte()
+            packet = MaplePacketHandler.getCharInfo(c.Player)
+            c.SendPacket(packet)
         Catch ex As Exception
             Dim packet As Byte()
             packet = MaplePacketHandler.getAfterLoginError(7)
             c.SendPacket(packet)
+            Console.WriteLine(ex.ToString)
         End Try
         Me.Dispose()
     End Sub

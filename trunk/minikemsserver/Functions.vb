@@ -18,9 +18,7 @@ Public Class Functions
 
     Private Shared r As New Random()
 
-    <DllImport("kernel32.dll", SetLastError:=True)> _
-    Public Shared Function GetTickCount() As Long
-    End Function
+
 
     Public Shared Function RandomByte() As Byte
         Randomize()
