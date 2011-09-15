@@ -3,6 +3,12 @@ Imports System.IO
 
 Public Class MapleInventory
     Public ItemList As New List(Of Items)
+    Public Equiped As New List(Of Items)
+    Public Equips As New List(Of Items)
+    Public Use As New List(Of Items)
+    Public Setup As New List(Of Items)
+    Public Etc As New List(Of Items)
+    Public Cash As New List(Of Items)
     Public slotLimit = 0
 
     Public Sub save(ByVal FileName As String)
@@ -64,6 +70,10 @@ Public Class MapleInventory
             item.giftFrom = CStr(subnode.Attributes.GetNamedItem("Value").Value)
             ItemList.Add(item)
         Next
+    End Sub
+
+    Public Sub SplitItems()
+
     End Sub
 
     Public Class Items

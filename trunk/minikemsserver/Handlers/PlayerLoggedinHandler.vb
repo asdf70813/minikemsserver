@@ -14,7 +14,8 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Imports MapleLib.PacketLib
-Public Class ViewAllCharsHandler
+
+Class PlayerLoggedinHandler
 #Region "IDisposable"
     Implements IDisposable
     Private disposedValue As Boolean = False
@@ -23,25 +24,22 @@ Public Class ViewAllCharsHandler
 
     End Sub
 #End Region
+
     Sub New(ByVal packetReader As PacketReader, ByVal c As MapleClient)
-        Dim chrList As New List(Of MapleCharacter)
-        Dim worldPackets As New List(Of Byte())
-        For Each World As MapleWorld In Server.Worlds
-            Dim chrsInWorld As List(Of MapleCharacter) = MapleCharacter.LoadFromDB(c, World.id)
-            chrList.AddRange(chrsInWorld)
-            Dim wpacket As Byte()
-            wpacket = MaplePacketHandler.showAllCharacterList(World, chrsInWorld)
-            worldPackets.Add(wpacket)
-        Next
-        Dim unk As Integer = chrList.Count + 3 - chrList.Count Mod 3
-        Dim packet As Byte()
-        packet = MaplePacketHandler.showAllCharacter(chrList.Count, unk)
-        c.SendPacket(packet)
-        Dim i As Integer = 0
-        For Each World As MapleWorld In Server.Worlds
-            c.SendPacket(worldPackets.Item(i))
-            i += 1
-        Next
+        c.specialID = packetReader.ReadInt
+        Try
+            Dim pendingClient As MapleClient = c.world.getClientBySpecialID(c.specialID)
+            c.AccountID = pendingClient.AccountID
+            c.Player = pendingClient.Player
+            c.channel = pendingClient.channel
+            c.world.PendingClients.Remove(pendingClient)
+            c.Player.client = c
+        Catch ex As Exception
+            Dim packet As Byte()
+            packet = MaplePacketHandler.getAfterLoginError(7)
+            c.SendPacket(packet)
+        End Try
         Me.Dispose()
     End Sub
+
 End Class

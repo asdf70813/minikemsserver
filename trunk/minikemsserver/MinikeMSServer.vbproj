@@ -78,10 +78,13 @@
     <Compile Include="Handlers\CharlistRequestHandler.vb" />
     <Compile Include="Handlers\CheckCharNameHandler.vb" />
     <Compile Include="Handlers\CreateCharHandler.vb" />
+    <Compile Include="Handlers\RegisterPICHandler.vb" />
     <Compile Include="Handlers\ViewAllCharsHandler.vb" />
     <Compile Include="Packets\MaplePacketHandler.vb" />
     <Compile Include="Handlers\ServerlistRequestHandler.vb" />
     <Compile Include="Handlers\ServerStatusRequestHandler.vb" />
+    <Compile Include="Handlers\SelectCharHandler.vb" />
+    <Compile Include="Handlers\PlayerLoggedinHandler.vb" />
     <Compile Include="Player\MapleCharacter.vb" />
     <Compile Include="Player\MapleInventory.vb" />
     <Compile Include="ServerInfo\MapleChannel.vb" />

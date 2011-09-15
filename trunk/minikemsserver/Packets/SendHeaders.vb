@@ -16,13 +16,18 @@
 Public Enum SendHeaders As UShort
     HandShake = &HE
 
+    'login server
     LOGIN_STATUS = &H0
     SERVERSTATUS = &H3
     ALL_CHARLIST = &H8
+    AFTER_LOGIN_ERROR = &H9
     SERVERLIST = &HA
     CHARLIST = &HB
+    SERVER_IP = &HC
     CHAR_NAME_RESPONSE = &HD
     ADD_NEW_CHAR_ENTRY = &HE
     SELECT_WORLD = &H1A
     SEND_RECOMMENDED = &H1B
+    WRONG_PIC = &H1C
+    WARP_TO_MAP = &H7D
 End Enum
