@@ -415,4 +415,146 @@ Public Class MaplePacketHandler
         writer.WriteShort(0)
     End Sub
 
+    Public Shared Function SendEnterFieldNew(ByRef c As MapleClient)
+        Dim writer As New PacketWriter
+        writer.WriteShort(WARP_TO_MAP)
+        Console.WriteLine("Player Connecting {0},{1}", c.channel.id, c.Player.mapId)
+        Writer.WriteInt(c.channel.id)
+        Writer.WriteByte(0) 'portalcount
+        Writer.WriteBool(True) ' Connect packet
+        Writer.WriteShort(0) ' No field messages
+
+        Dim rnd As New Random()
+        Writer.WriteInt(rnd.Next()) ' Need to create the Random Generator for this
+        Writer.WriteInt(rnd.Next())
+        Writer.WriteInt(rnd.Next())
+
+        Writer.WriteLong(-1) ' All flags set
+
+        Writer.WriteByte(0)
+        AddCharacterData(Writer, c.Player)
+
+        Writer.WriteByte(0) 'buddy list
+
+        Writer.WriteBool(False) ' Blessing of the Fairy name thing
+        ' packet.WriteMapleString(BoFName)
+
+        GetInventoryPacket(Writer, c)
+        GetSkillsPacket(Writer, c)
+        GetQuestsPacket(Writer, c)
+
+        Writer.WriteInt(0)
+        Writer.WriteInt(0)
+
+        'GetRocksPacket(Writer)
+        'GetBookPacket(Writer)
+        Writer.WriteInt(0) ' Cover
+        Writer.WriteBool(False) ' Boolean for 'bytes mode', never true for pservers lol
+        Writer.WriteShort(0)
+
+        Writer.WriteShort(0)
+        Writer.WriteShort(0)
+        Writer.WriteShort(0)
+
+        Writer.WriteLong(DateTime.Now.ToFileTimeUtc())
+
+        Return Writer.ToArray
+
+    End Function
+
+    Public Shared Sub AddCharacterData(ByRef writer As PacketWriter, ByRef chr As MapleCharacter)
+        writer.WriteInt(chr.id)
+        Dim name As String = chr.Name
+        While name.Length < 13
+            name = name & ControlChars.NullChar
+        End While
+        writer.WriteString(chr.Name)
+        writer.WriteByte(chr.Gender)
+        writer.WriteByte(chr.skincolor)
+        writer.WriteInt(chr.face)
+        writer.WriteInt(chr.hair)
+        writer.WriteLong(0) ' Pet ID's
+        writer.WriteLong(0)
+        writer.WriteLong(0)
+        writer.WriteByte(chr.level)
+        writer.WriteShort(chr.job)
+        writer.WriteShort(chr.str)
+        writer.WriteShort(chr.dex)
+        writer.WriteShort(chr.int)
+        writer.WriteShort(chr.luk)
+        writer.WriteShort(chr.curHp)
+        writer.WriteShort(chr.maxHp)
+        writer.WriteShort(chr.curMp)
+        writer.WriteShort(chr.maxMp)
+        writer.WriteShort(chr.ap)
+        If (chr.job / 100) = 22 Then ' Evan job.
+            writer.WriteByte(chr.sp)
+        Else
+            writer.WriteShort(chr.sp)
+        End If
+        writer.WriteInt(chr.exp)
+        writer.WriteShort(chr.fame)
+        writer.WriteInt(0) ' Gachapon EXP
+        writer.WriteInt(chr.mapId)
+        writer.WriteByte(chr.spawnpoint)
+        writer.WriteInt(0)
+    End Sub
+
+    Public Shared Sub GetInventoryPacket(ByRef pPacket As PacketWriter, ByVal c As MapleClient)
+        pPacket.WriteInt(0)
+        For i As Byte = 0 To 4
+            pPacket.WriteByte(c.Player.slots(i))
+        Next
+
+        pPacket.WriteLong(94354848000000000)
+
+        pPacket.WriteShort(0)
+        pPacket.WriteShort(0)
+        pPacket.WriteShort(0)
+
+        pPacket.WriteShort(0)
+
+        pPacket.WriteByte(0)
+        pPacket.WriteByte(0)
+        pPacket.WriteByte(0)
+        pPacket.WriteByte(0)
+    End Sub
+
+    Public Shared Sub GetSkillsPacket(ByRef writer As PacketWriter, ByVal c As MapleClient)
+        writer.WriteShort(0)
+        writer.WriteShort(0)
+        'pPacket.WriteShort(mSkills.Count)
+        'For Each kvp As KeyValuePair(Of Integer, CharacterSkillData) In mSkills
+        '    pPacket.WriteInt(kvp.Key)
+        '    pPacket.WriteInt(kvp.Value.mLevel)
+        '    pPacket.WriteLong(kvp.Value.mExpirationDate)
+        '    If IsFourthJobSkill(kvp.Key) Then
+        '        pPacket.WriteInt(kvp.Value.mMaxLevel)
+        '    End If
+        'Next
+
+        'pPacket.WriteShort(mCooldowns.Count)
+        'For Each kvp As KeyValuePair(Of Integer, Short) In mCooldowns
+        '    pPacket.WriteInt(kvp.Key)
+        '    pPacket.WriteShort(kvp.Value)
+        'Next
+    End Sub
+
+    Public Shared Sub GetQuestsPacket(ByRef writer As PacketWriter, ByVal c As MapleClient)
+        writer.WriteShort(0)
+        writer.WriteShort(0)
+        'pPacket.WriteShort(mActiveQuests.Count)
+        'For Each kvp As KeyValuePair(Of Short, ActiveQuest) In mActiveQuests
+        '    pPacket.WriteShort(kvp.Key)
+        '    pPacket.WriteMapleString(kvp.Value.mData)
+        'Next
+
+        'pPacket.WriteShort(mCompleteQuests.Count)
+        'For Each kvp As KeyValuePair(Of Short, Long) In mCompleteQuests
+        '    pPacket.WriteShort(kvp.Key)
+        '    pPacket.WriteLong(kvp.Value)
+        'Next
+
+    End Sub
+
 End Class

@@ -30,10 +30,9 @@ Module Server
             Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
             loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE loggedin='1'")
             loggedinCon.Dispose()
-            checkInvPath()
             'Starting the login server
             LoginServer = New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-            LoginServer.Bind(New IPEndPoint(IPAddress.Any, Settings.Port))
+            LoginServer.Bind(New IPEndPoint(IPAddress.Parse(Settings.IP), Settings.Port))
             LoginServer.Listen(test)
             BeginLoginListenerAccept(Nothing)
             Console.WriteLine("LoginSever binded to port {0}", Settings.Port)
@@ -84,7 +83,9 @@ pause:  line = Console.ReadLine()
                 sendIV(3) = RandomByte()
                 Dim _RIV As New MapleCrypto(receiveIV, Settings.mapleVersion)
                 Dim _SIV As New MapleCrypto(sendIV, Settings.mapleVersion)
-                Dim client As New MapleClient(pArguments.AcceptSocket, _RIV, _SIV)
+                Dim client As New MapleClient(pArguments.AcceptSocket)
+                client._RIV = _RIV
+                client._SIV = _SIV
                 client.SendHandshake(Settings.mapleVersion, receiveIV, sendIV)
                 Clients.Add(client)
                 BeginLoginListenerAccept(pArguments)
@@ -101,19 +102,6 @@ pause:  line = Console.ReadLine()
         SyncLock Clients
             Clients.Remove(pClient)
         End SyncLock
-    End Sub
-
-    Private Sub checkInvPath()
-        If Not System.IO.Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys") Then
-            System.IO.Directory.CreateDirectory(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys")
-        End If
-        Dim i As Integer = 0
-        For Each world In Settings.WorldSettings
-            If Not System.IO.Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys\world" & i) Then
-                System.IO.Directory.CreateDirectory(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys\world" & i)
-            End If
-            i += 1
-        Next
     End Sub
 
 End Module
