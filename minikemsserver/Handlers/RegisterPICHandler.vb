@@ -44,7 +44,7 @@ Public Class RegisterPICHandler
             pendingClient.world = c.world
             pendingClient.Player = MapleCharacter.LoadFromDB(pendingClient, pendingClient.world.id, charId)(0)
             pendingClient.channel = c.channel
-            pendingClient.specialID = (charId * 7) Mod 5
+            pendingClient.specialID = CInt(&H7FFFFF - (((charId * 7 ^ 2) Mod 5) * 123.5)) - charId
             c.world.PendingClients.Add(pendingClient)
             Dim packet As Byte()
             packet = MaplePacketHandler.getServerIP(c.world.ipToByteArray(), c.world.port, pendingClient.specialID)

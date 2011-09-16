@@ -28,7 +28,7 @@ Public Class MapleCharacter
     Public mapId As Integer = 0
     Public spawnpoint As Byte = 0
     Public client As MapleClient = Nothing
-    Public Inventory As MapleInventory = Nothing
+    Public Inventory As MapleInventory = New MapleInventory()
 
     Public Sub New(ByVal c As MapleClient, ByVal _name As String, Optional ByVal clean As Boolean = False)
         If clean Then
@@ -59,7 +59,8 @@ Public Class MapleCharacter
         'TODO: Add inventory,keymap, etc
     End Sub
 
-    Public Sub SaveToDB(ByVal newchr As Boolean)
+    Public Function SaveToDB(ByVal newchr As Boolean, ByVal c As MapleClient) As MapleCharacter
+        Dim retChar As MapleCharacter = Nothing
         If newchr Then
             Dim saveCon As New MySQLCon(Settings.ConnectionString)
             Dim saveQuery As String = "INSERT INTO tbl_characters (accountid,Name,WorldID,GM,Gender,Skin,Hair,Face,Level,job,str,dex,_int,luk,curHp,maxHp,curMp,maxMp,ap,sp,exp,fame,gachaExp,mapId,spawnpoint) VALUES ('" &
@@ -89,6 +90,12 @@ Public Class MapleCharacter
                                     mapId & "','" &
                                     spawnpoint & "')"
             saveCon.ExecuteQuery(saveQuery)
+            Dim reader As MySqlDataReader = saveCon.ReadQuery("SELECT t.id FROM tbl_characters t WHERE name='" & Name & "' AND WorldID='" & worldId & "' ORDER BY id DESC")
+            While reader.Read()
+                retChar = LoadFromDB(c, c.world.id, reader.GetInt32("id"))(0)
+                Exit While
+            End While
+            reader.Dispose()
             saveCon.Dispose()
             saveQuery = Nothing
         Else
@@ -123,9 +130,10 @@ Public Class MapleCharacter
             saveCon.ExecuteQuery(saveQuery)
             saveCon.Dispose()
             saveQuery = Nothing
+            Inventory.save()
         End If
-        Inventory.save(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys\world" & client.world.id & "\" & Name & ".xml")
-    End Sub
+        Return retChar
+    End Function
 
     Public Shared Function LoadFromDB(ByVal c As MapleClient, ByVal WorldID As Integer, Optional ByVal CharID As Integer = -1) As List(Of MapleCharacter)
         Dim CharCon As New MySQLCon(Settings.ConnectionString)
@@ -163,7 +171,7 @@ Public Class MapleCharacter
             chr.mapId = reader.GetInt32("mapId")
             chr.spawnpoint = reader.GetInt32("spawnpoint")
             Dim inv As New MapleInventory
-            inv.load(System.AppDomain.CurrentDomain.BaseDirectory & "\inventorys\world" & WorldID & "\" & chr.Name & ".xml")
+            inv.load(chr.id)
             chr.Inventory = inv
             charList.Add(chr)
         End While
