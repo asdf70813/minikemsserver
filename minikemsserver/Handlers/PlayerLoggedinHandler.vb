@@ -35,7 +35,7 @@ Class PlayerLoggedinHandler
             c.world.PendingClients.Remove(pendingClient)
             c.Player.client = c
             Dim packet As Byte()
-            packet = MaplePacketHandler.getCharInfo(c.Player)
+            packet = MaplePacketHandler.SendEnterFieldNew(c)
             c.SendPacket(packet)
         Catch ex As Exception
             Dim packet As Byte()

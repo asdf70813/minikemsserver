@@ -38,7 +38,7 @@ Public Class RegisterPICHandler
             picCon.Dispose()
             c.hasPic = True
             c.pic = pic
-            Dim pendingClient As New MapleClient(Nothing, Nothing, Nothing, True)
+            Dim pendingClient As New MapleClient(Nothing, True)
             pendingClient.AccountID = c.AccountID
             pendingClient.AccountName = c.AccountName
             pendingClient.world = c.world

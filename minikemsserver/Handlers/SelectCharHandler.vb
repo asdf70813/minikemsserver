@@ -32,14 +32,13 @@ Class SelectCharHandler
         If c.hasPic Then
             Dim packet As Byte()
             If pic.Equals(c.pic) Then
-                Dim pendingClient As New MapleClient(Nothing, Nothing, Nothing, True)
+                Dim pendingClient As New MapleClient(Nothing, True)
                 pendingClient.AccountID = c.AccountID
                 pendingClient.AccountName = c.AccountName
                 pendingClient.world = c.world
                 pendingClient.Player = MapleCharacter.LoadFromDB(pendingClient, pendingClient.world.id, charId)(0)
                 pendingClient.channel = c.channel
                 pendingClient.specialID = CInt(&H7FFFFF - (((charId * 7 ^ 2) Mod 5) * 123.5)) - charId
-                Console.WriteLine("Special id [{0}]", pendingClient.specialID)
                 c.world.PendingClients.Add(pendingClient)
                 packet = MaplePacketHandler.getServerIP(c.world.ipToByteArray(), c.world.port, pendingClient.specialID)
             Else

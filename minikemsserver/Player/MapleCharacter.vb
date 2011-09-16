@@ -27,6 +27,7 @@ Public Class MapleCharacter
     Public gachaExp As Integer = 0
     Public mapId As Integer = 0
     Public spawnpoint As Byte = 0
+    Public slots As Byte() = New Byte(4) {24, 24, 24, 24, 30}
     Public client As MapleClient = Nothing
     Public Inventory As MapleInventory = New MapleInventory()
 

@@ -45,8 +45,8 @@ Public NotInheritable Class MapleClient
     Private mSendSegments As New LockFreeQueue(Of ByteArraySegment)()
     Private mSending As Integer = 0
 
-    Private _RIV As MapleCrypto = Nothing
-    Private _SIV As MapleCrypto = Nothing
+    Public _RIV As MapleCrypto = Nothing
+    Public _SIV As MapleCrypto = Nothing
     Private _type = SessionType.SERVER_TO_CLIENT
     Private mReceivingPacketLength As UShort = 0
     Private rPacket_Handler As New RecvPacketHandler
@@ -63,14 +63,12 @@ Public NotInheritable Class MapleClient
     Public pic As String
     Public specialID As Integer
 
-    Public Sub New(ByVal pSocket As Socket, ByVal ReceiveMapleCrypto As MapleCrypto, ByVal SendMapleCrypto As MapleCrypto, Optional ByVal cloned As Boolean = False)
+    Public Sub New(ByVal pSocket As Socket, Optional ByVal cloned As Boolean = False)
         If Not cloned Then
             mSocket = pSocket
-            _RIV = ReceiveMapleCrypto
-            _SIV = SendMapleCrypto
             mReceiveBuffer = New Byte(MAX_RECEIVE_BUFFER - 1) {}
             mHost = DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Address.ToString()
-            Console.WriteLine("[{0}] Connected", mHost)
+            Console.WriteLine("[{0}:{1}] Connected", mHost, DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Port.ToString)
             WaitForData()
         End If
     End Sub
@@ -169,9 +167,9 @@ Public NotInheritable Class MapleClient
             If LoggedIn > 0 Then
                 LogOut()
             End If
+            Console.WriteLine("[{0}:{1}] Disconnected", Host, DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Port.ToString)
             mSocket.Shutdown(SocketShutdown.Both)
             mSocket.Close()
-            Console.WriteLine("[{0}] Disconnected", Host)
             Server.ClientDisconnected(Me)
             Me.Dispose()
         End If
