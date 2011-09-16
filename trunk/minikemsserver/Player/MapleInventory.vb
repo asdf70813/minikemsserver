@@ -1,5 +1,6 @@
 ﻿Imports System.Xml
 Imports System.IO
+Imports MySql.Data.MySqlClient
 
 Public Class MapleInventory
     Public ItemList As New List(Of Items)
@@ -12,69 +13,75 @@ Public Class MapleInventory
     Public Cash As New List(Of Items)
     Public slotLimit = 0
 
-    Public Sub save(ByVal FileName As String)
+    Public Sub save() 'TODO: Equip stats
         If Splitted Then
             UnSplitItems()
             Splitted = False
         End If
         Try
-            Dim writer As New XmlTextWriter(FileName, System.Text.Encoding.UTF8)
-            writer.WriteStartElement("ItemList")
-
+            Dim itemAddCon As New MySQLCon(Settings.ConnectionString)
             For Each item As Items In ItemList
-                writer.WriteStartElement("Item")
-                writer.WriteStartElement("ID")
-                writer.WriteAttributeString("Value", item.id)
-                writer.WriteStartElement("posistion")
-                writer.WriteAttributeString("Value", item.position)
-                writer.WriteStartElement("type")
-                writer.WriteAttributeString("Value", item.type)
-                writer.WriteStartElement("quantity")
-                writer.WriteAttributeString("Value", item.quantity)
-                writer.WriteStartElement("owner")
-                writer.WriteAttributeString("Value", item.owner)
-                writer.WriteStartElement("flag")
-                writer.WriteAttributeString("Value", item.flag)
-                writer.WriteStartElement("expiration")
-                writer.WriteAttributeString("Value", item.expiration)
-                writer.WriteStartElement("giftFrom")
-                writer.WriteAttributeString("Value", item.giftFrom)
-                For i = 0 To 8
-                    writer.WriteEndElement()
-                Next
+                Dim reader As MySqlDataReader = itemAddCon.ReadQuery("SELECT t.id FROM tbl_inventory t WHERE charid='" & item.charID & "' AND type='" & item.type & "' AND position='" & item.position & "' AND itemid='" & item.id & "'")
+                Dim count As Integer = 0
+                Dim sqlID As Integer = 0
+                Dim query As String = ""
+                While reader.Read
+                    sqlID = reader.GetInt32("id")
+                    count += 1
+                End While
+                reader.Dispose()
+                If count = 1 And Not sqlID = 0 Then
+                    query = "UPDATE tbl_inventory SET itemid='" & item.id &
+                        "' AND position='" & item.position &
+                        "' AND type='" & item.type &
+                        "' AND quantity='" & item.quantity &
+                        "' AND owner='" & item.owner &
+                        "' AND flag='" & item.flag &
+                        "' AND expiration ='" & item.expiration &
+                        "' AND giftfrom='" & item.giftFrom &
+                        "' AND charid='" & item.charID &
+                        "' AND equipid='" & item.EquipID &
+                        "' WHERE id='" & item.sqlID & "'"
+                ElseIf count > 1 And Not sqlID = 0 Then
+                    Console.WriteLine("[WARNING] Double item count id={0}", sqlID)
+                Else
+                    query = "INSERT INTO tbl_inventory (itemid,position,type,quantity,owner,flag,expiration,giftfrom,charid,equipid) VALUES('" &
+                        item.id & "','" &
+                        item.position & "','" &
+                        item.type & "','" &
+                        item.quantity & "','" &
+                        item.owner & "','" &
+                        item.flag & "','" &
+                        item.expiration & "','" &
+                        item.giftFrom & "','" &
+                        item.charID & "','" &
+                        item.EquipID & "')"
+                End If
+                If Not query.Equals("") Then
+                    itemAddCon.ExecuteQuery(query)
+                End If
             Next
-
-            writer.WriteEndElement()
-            writer.Close()
+            itemAddCon.Dispose()
         Catch ex As Exception
-            Console.WriteLine("Error ocured while writing invertory XML FileName: {0} Error: {1}", FileName, ex.ToString)
+            Console.WriteLine("Error ocured while writing invertoryDB, Error: {0}", ex.ToString)
         End Try
     End Sub
 
-    Public Sub load(ByVal FileName As String)
-        Dim reader As New XmlDocument()
-        reader.Load(FileName)
-        Dim nodelist As XmlNodeList = reader.SelectNodes("/ItemList/Item")
-        For Each node As XmlNode In nodelist
-            Dim subnode = node.ChildNodes.Item(0)
-            Dim _id As Integer = CInt(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            Dim _posistion As Short = CShort(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            Dim _type As Short = CShort(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            Dim _quantity As Short = CShort(subnode.Attributes.GetNamedItem("Value").Value)
-            Dim item As Items = New Items(_type, _id, _posistion, _quantity)
-            subnode = subnode.ChildNodes.Item(0)
-            item.owner = CStr(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            item.flag = CByte(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            item.expiration = CLng(subnode.Attributes.GetNamedItem("Value").Value)
-            subnode = subnode.ChildNodes.Item(0)
-            item.giftFrom = CStr(subnode.Attributes.GetNamedItem("Value").Value)
+    Public Sub load(ByVal charID As Integer)
+        Dim loadItemsCon As New MySQLCon(Settings.ConnectionString)
+        Dim reader As MySqlDataReader = loadItemsCon.ReadQuery("SELECT * FROM tbl_inventory WHERE charid ='" & charID & "'")
+        While reader.Read
+            Dim item As New Items(reader.GetInt32("type"), reader.GetInt32("itemid"), reader.GetInt32("position"), reader.GetInt32("quantity"), reader.GetInt32("charid"))
+            item.owner = reader.GetString("owner")
+            item.flag = reader.GetInt32("flag")
+            item.expiration = CLng(reader.GetString("expiration"))
+            item.giftFrom = reader.GetString("giftfrom")
+            item.flag = reader.GetInt32("equipid")
+            item.sqlID = reader.GetInt32("id")
             ItemList.Add(item)
-        Next
+        End While
+        reader.Dispose()
+        loadItemsCon.Dispose()
     End Sub
 
     Public Sub SplitItems()
@@ -126,6 +133,8 @@ Public Class MapleInventory
     End Sub
 
     Public Class Items
+        Public sqlID As Integer = 0
+        Public charID As Integer = 0
         Public id, cashid, sn As Integer
         Public position As Short = 0
         Public type As Short = 0
@@ -134,13 +143,24 @@ Public Class MapleInventory
         Public flag As Byte = 0
         Public expiration As Long = -1
         Public giftFrom As String = ""
+        Public EquipID As Integer = 0
+        Public Stats As EquipStats = Nothing
 
-        Sub New(ByVal _type As Short, ByVal _id As Integer, ByVal _posistion As Short, ByVal _quantity As Short)
-            Type = _type
+        Sub New(ByVal _type As Short, ByVal _id As Integer, ByVal _posistion As Short, ByVal _quantity As Short, ByVal _charid As Integer)
+            type = _type
             id = _id
+            charID = _charid
             position = _posistion
             quantity = _quantity
+            Select Case type
+                Case Types.Equipped, Types.Equip, Types.Cash
+                    'Add stat handling here
+            End Select
         End Sub
+    End Class
+
+    Public Class EquipStats
+
     End Class
 
     Public Enum Types As Short

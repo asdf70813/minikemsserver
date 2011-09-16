@@ -71,20 +71,24 @@ Class CreateCharHandler
         Select Case job
             Case 0
                 newCharacter.job = MapleCharacter.Jobs.Noblesse
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161047, 0, 1))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161047, 0, 1, 0))
             Case 2
                 newCharacter.job = MapleCharacter.Jobs.Legend
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161048, 0, 1))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161048, 0, 1, 0))
             Case Else 'default, could ban for > 2 though
                 newCharacter.job = MapleCharacter.Jobs.beginner
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161001, 0, 1))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161001, 0, 1, 0))
         End Select
-        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, top, -5, 1))
-        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, bottom, -6, 1))
-        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, shoes, -7, 1))
-        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, weapon, -11, 1))
+        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, top, -5, 1, 0))
+        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, bottom, -6, 1, 0))
+        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, shoes, -7, 1, 0))
+        inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, weapon, -11, 1, 0))
+        newCharacter = newCharacter.SaveToDB(True, c)
+        For Each item In inventory.ItemList
+            item.charID = newCharacter.id
+        Next
         newCharacter.Inventory = inventory
-        newCharacter.SaveToDB(True)
+        newCharacter.Inventory.save()
         Dim packet As Byte() = MaplePacketHandler.addNewCharEntry(newCharacter)
         c.SendPacket(packet)
         Me.Dispose()

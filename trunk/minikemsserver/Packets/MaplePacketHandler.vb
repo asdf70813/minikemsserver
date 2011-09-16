@@ -136,9 +136,11 @@ Public Class MaplePacketHandler
         writer.WriteByte(chr.skincolor)
         writer.WriteInt(chr.face)
         writer.WriteInt(chr.hair)
-        For i As Integer = 1 To 3 'TODO : pets
-            writer.WriteLong(0)
-        Next
+        
+        writer.WriteLong(0) 'TODO: pets
+        writer.WriteLong(0)
+        writer.WriteLong(0)
+
         writer.WriteByte(chr.level)
         writer.WriteShort(chr.job)
         writer.WriteShort(chr.str)
@@ -264,14 +266,11 @@ Public Class MaplePacketHandler
         writer.WriteShort(WARP_TO_MAP)
         writer.WriteInt(chr.client.channel.id)
         writer.WriteBytes(New Byte() {1, 1, 0, 0})
-        For i = 1 To 3
-            writer.WriteInt(Random())
-        Next
+        writer.WriteInt(Random())
+        writer.WriteInt(Random())
+        writer.WriteInt(Random())
         addCharacterInfo(writer, chr)
-        Dim dateToday As DateTime = New DateTime(1970, 1, 1)
-        Dim date1970 As DateTime = DateTime.Now
-        Dim span As TimeSpan = dateToday - date1970
-        writer.WriteLong(span.TotalMilliseconds * 10000 + 116444592000000000)
+        writer.WriteLong(DateTime.Now.ToFileTimeUtc())
         Return writer.ToArray
     End Function
 
@@ -281,8 +280,8 @@ Public Class MaplePacketHandler
         writer.WriteByte(0)
         addCharStats(writer, chr)
         writer.WriteByte(0) 'TODO: buddylist
-        writer.WriteByte(0) 'TODO: Linked characters
-        writer.WriteInt(0) 'TODO: Mesos
+
+        writer.WriteBool(False) 'TODO: Linked characters
         addInventoryInfo(writer, chr)
         addSkillInfo(writer, chr)
         addQuestInfo(writer, chr)
@@ -295,37 +294,51 @@ Public Class MaplePacketHandler
     End Sub
 
     Private Shared Sub addInventoryInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
+        writer.WriteInt(0) 'TODO: Mesos
         For i = 1 To 5
-            writer.WriteByte(1) 'TODO: Inventory size left
+            writer.WriteByte(28) 'TODO: Inventory size left
         Next
-        For Each item As MapleInventory.Items In chr.Inventory.Equiped
-            addItemInfo(writer, item)
-        Next
-        writer.WriteShort(0)
 
-        'TODO: Cash items
+        writer.WriteLong(94354848000000000)
 
         writer.WriteShort(0)
-        'TODO: add stats for weapons
-        'For Each item As MapleInventory.Items In chr.Inventory.Equips
+        writer.WriteShort(0)
+        writer.WriteShort(0)
+
+        writer.WriteShort(0)
+
+        writer.WriteByte(0)
+        writer.WriteByte(0)
+        writer.WriteByte(0)
+        writer.WriteByte(0)
+        'For Each item As MapleInventory.Items In chr.Inventory.Equiped
         '    addItemInfo(writer, item)
         'Next
-        writer.WriteInt(0)
-        For Each item As MapleInventory.Items In chr.Inventory.Use
-            addItemInfo(writer, item)
-        Next
-        writer.WriteByte(0)
-        For Each item As MapleInventory.Items In chr.Inventory.Setup
-            addItemInfo(writer, item)
-        Next
-        writer.WriteByte(0)
-        For Each item As MapleInventory.Items In chr.Inventory.Etc
-            addItemInfo(writer, item)
-        Next
-        writer.WriteByte(0)
-        For Each item As MapleInventory.Items In chr.Inventory.Cash
-            addItemInfo(writer, item)
-        Next
+        'writer.WriteShort(0)
+
+        ''TODO: Cash items
+
+        'writer.WriteShort(0)
+        ''TODO: add stats for weapons
+        ''For Each item As MapleInventory.Items In chr.Inventory.Equips
+        ''    addItemInfo(writer, item)
+        ''Next
+        'writer.WriteInt(0)
+        'For Each item As MapleInventory.Items In chr.Inventory.Use
+        '    addItemInfo(writer, item)
+        'Next
+        'writer.WriteByte(0)
+        'For Each item As MapleInventory.Items In chr.Inventory.Setup
+        '    addItemInfo(writer, item)
+        'Next
+        'writer.WriteByte(0)
+        'For Each item As MapleInventory.Items In chr.Inventory.Etc
+        '    addItemInfo(writer, item)
+        'Next
+        'writer.WriteByte(0)
+        'For Each item As MapleInventory.Items In chr.Inventory.Cash
+        '    addItemInfo(writer, item)
+        'Next
     End Sub
 
     Private Shared Sub addItemInfo(ByVal writer As PacketWriter, ByVal item As MapleInventory.Items)
