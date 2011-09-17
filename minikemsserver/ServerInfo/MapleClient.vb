@@ -62,8 +62,10 @@ Public NotInheritable Class MapleClient
     Public hasPic As Boolean
     Public pic As String
     Public specialID As Integer
+    Public cloned As Boolean = False
 
-    Public Sub New(ByVal pSocket As Socket, Optional ByVal cloned As Boolean = False)
+    Public Sub New(ByVal pSocket As Socket, Optional ByVal _cloned As Boolean = False)
+        cloned = _cloned
         If Not cloned Then
             mSocket = pSocket
             mReceiveBuffer = New Byte(MAX_RECEIVE_BUFFER - 1) {}
@@ -176,9 +178,11 @@ Public NotInheritable Class MapleClient
     End Sub
 
     Public Sub LogOut()
-        Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
-        loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE account='" & AccountName & "'")
-        loggedinCon.Dispose()
+        If Not cloned Then
+            Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
+            loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE account='" & AccountName & "'")
+            loggedinCon.Dispose()
+        End If
     End Sub
 
     Friend Sub SendHandshake(ByVal pBuild As UShort, ByVal pReceiveIV As Byte(), ByVal pSendIV As Byte())

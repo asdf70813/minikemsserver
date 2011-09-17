@@ -14,6 +14,8 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Imports MapleLib.PacketLib
+Imports MinikeMSServer.Functions
+
 Public Class RegisterPICHandler
 #Region "IDisposable"
     Implements IDisposable
@@ -44,8 +46,9 @@ Public Class RegisterPICHandler
             pendingClient.world = c.world
             pendingClient.Player = MapleCharacter.LoadFromDB(pendingClient, pendingClient.world.id, charId)(0)
             pendingClient.channel = c.channel
-            pendingClient.specialID = CInt(&H7FFFFF - (((charId * 7 ^ 2) Mod 5) * 123.5)) - charId
+            pendingClient.specialID = MakeSpecialID(charId, c)
             c.world.PendingClients.Add(pendingClient)
+            c.cloned = True
             Dim packet As Byte()
             packet = MaplePacketHandler.getServerIP(c.world.ipToByteArray(), c.world.port, pendingClient.specialID)
             c.SendPacket(packet)

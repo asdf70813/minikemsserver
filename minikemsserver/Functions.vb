@@ -18,6 +18,20 @@ Public Class Functions
 
     Private Shared r As New Random()
 
+    Public Shared Function MakeSpecialID(ByVal charid As Integer, ByVal c As MapleClient) As Integer
+        Dim retlong As Long
+        Dim retInt As Integer
+calc:   retlong = (Random(&H7F000000, &H7FFFFFFF) - (((charid * 7 ^ 2) Mod 5) * RandomByte())) - charid
+        If retlong > 2147483647 Or retlong < -2147483647 Then 'I dont think it will happen, but just incase some1 decides to change it
+            GoTo calc
+        Else
+            retInt = CInt(retlong)
+        End If
+        If Not IsNothing(c.world.getClientBySpecialID(retInt)) Then 'prevent double (existing) special ids
+            GoTo calc
+        End If
+        Return retInt
+    End Function
 
 
     Public Shared Function RandomByte() As Byte
