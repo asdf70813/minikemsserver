@@ -29,6 +29,7 @@ Class PlayerLoggedinHandler
         c.specialID = packetReader.ReadInt
         Try
             Dim pendingClient As MapleClient = c.world.getClientBySpecialID(c.specialID)
+            c.cloned = False
             c.AccountID = pendingClient.AccountID
             c.Player = pendingClient.Player
             c.channel = pendingClient.channel

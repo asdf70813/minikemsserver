@@ -60,6 +60,7 @@ Public Class MySQLCon
             Dim query As New MySqlCommand(querystring, connection)
             query.ExecuteNonQuery()
         Catch ex As Exception
+            Console.WriteLine(querystring)
             Console.WriteLine("Something went wrong while executing a query {0}", ex.ToString)
         End Try
     End Sub
@@ -74,6 +75,7 @@ Public Class MySQLCon
             Dim query As New MySqlCommand(querystring, connection)
             Return query.ExecuteReader
         Catch ex As Exception
+            Console.WriteLine(querystring)
             Console.WriteLine("Something went wrong while executing a readquery {0}", ex.ToString)
         End Try
         Return Nothing

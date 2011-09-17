@@ -1,4 +1,19 @@
-﻿Imports MapleLib.PacketLib
+﻿'    This file is part of MinikeMSServer.
+
+'    MinikeMSServer is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+
+'    MinikeMSServer is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+
+'    You should have received a copy of the GNU General Public License
+'    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
+
+Imports MapleLib.PacketLib
 Imports MinikeMSServer.SendHeaders
 Imports MinikeMSServer.Functions
 
@@ -212,6 +227,7 @@ Public Class MaplePacketHandler
         Dim writer As New PacketWriter
         writer.WriteShort(ADD_NEW_CHAR_ENTRY)
         writer.WriteByte(0)
+        newCharacter.Inventory.SplitItems()
         addCharEntry(writer, newCharacter, False)
         Return writer.ToArray
     End Function
@@ -302,20 +318,20 @@ Public Class MaplePacketHandler
         
 
         'iteminfo packet for equipped sword : &HB, &H0, &H1, &HF0, &HDD, &H13, &H0, &H0, &H0, &H80, &H5, &H35, &HA7, &H43, &HBF, &H2, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H11, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H1, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H40, &HE0, &HFD, &H3B, &H37, &H4F, &H1, &HFF, &HFF, &HFF, &HFF
-        'For Each item As MapleInventory.Items In chr.Inventory.Equiped
-        '    addItemInfo(writer, item)
-        'Next
+        For Each item As MapleInventory.Items In chr.Inventory.Equiped
+            addItemInfo(writer, item)
+        Next
 
         writer.WriteShort(0)
 
-        'TODO: Cash items
+        'TODO: Cash equips
 
         writer.WriteShort(0)
-        
+
         'TODO: add stats for weapons
-        'For Each item As MapleInventory.Items In chr.Inventory.Equips
-        '    addItemInfo(writer, item)
-        'Next
+        For Each item As MapleInventory.Items In chr.Inventory.Equips
+            addItemInfo(writer, item)
+        Next
         writer.WriteInt(0)
 
         For Each item As MapleInventory.Items In chr.Inventory.Use
@@ -332,9 +348,9 @@ Public Class MaplePacketHandler
         Next
 
         writer.WriteByte(0)
-        
+
         'For Each item As MapleInventory.Items In chr.Inventory.Cash
-        '    addItemInfo(writer, item)
+        '    addItemInfo(writer, item, True, False)
         'Next
     End Sub
 
@@ -368,9 +384,46 @@ Public Class MaplePacketHandler
             writer.WriteShort(item.quantity)
             writer.WriteMapleString(item.owner)
             writer.WriteShort(item.flag)
+            'TODO: rechargeable
+            Return
         End If
 
         'TODO: Equips and stats
+        With item.Stats
+            writer.WriteByte(.slots)
+            writer.WriteByte(0) 'level?!?!
+            writer.WriteShort(.str)
+            writer.WriteShort(.dex)
+            writer.WriteShort(.int)
+            writer.WriteShort(.luk)
+            writer.WriteShort(.hp)
+            writer.WriteShort(.mp)
+            writer.WriteShort(.watk)
+            writer.WriteShort(.matk)
+            writer.WriteShort(.wdef)
+            writer.WriteShort(.mdef)
+            writer.WriteShort(.acc)
+            writer.WriteShort(.avo)
+            writer.WriteShort(.hands)
+            writer.WriteShort(.speed)
+            writer.WriteShort(.jump)
+            writer.WriteMapleString(item.owner)
+            writer.WriteShort(.flag)
+            If cash Then
+                For i = 0 To 9
+                    writer.WriteByte(&H40)
+                Next
+            Else
+                writer.WriteByte(0)
+                writer.WriteByte(.itemlevel)
+                writer.WriteShort(0)
+                writer.WriteShort(.itemexp)
+                writer.WriteInt(.vicious)
+                writer.WriteLong(0)
+            End If
+        End With
+        writer.WriteBytes(New Byte() {0, &H40, &HE0, &HFD, &H3B, &H37, &H4F, 1})
+        writer.WriteInt(-1)
     End Sub
 
     Private Shared Sub addExpirationTime(ByVal writer As PacketWriter, ByVal expiration As Long)

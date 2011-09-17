@@ -17,6 +17,7 @@ Imports System.Net.Sockets
 Imports System.Net
 Imports MinikeMSServer.Functions
 Imports MapleLib.MapleCryptoLib
+Imports System.IO
 
 Module Server
     Private LoginServer As Socket
@@ -27,6 +28,9 @@ Module Server
     Sub Main()
         Try
             'Resseting the loggedin values for accounts
+            If Not Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory & "\wz") Then
+                Console.WriteLine("[NUB WARNING!] Wz directory not found, niblet")
+            End If
             Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
             loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE loggedin='1'")
             loggedinCon.Dispose()

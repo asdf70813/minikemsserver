@@ -12,6 +12,7 @@
 
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
+
 Imports System.Runtime.InteropServices
 
 Public Class Functions
@@ -33,6 +34,10 @@ calc:   retlong = (Random(&H7F000000, &H7FFFFFFF) - (((charid * 7 ^ 2) Mod 5) * 
         Return retInt
     End Function
 
+    Public Shared Function RandomDouble() As Double
+        Randomize()
+        Return r.NextDouble()
+    End Function
 
     Public Shared Function RandomByte() As Byte
         Randomize()
