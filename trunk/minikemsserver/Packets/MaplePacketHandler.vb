@@ -275,17 +275,15 @@ Public Class MaplePacketHandler
     End Function
 
     Private Shared Sub addCharacterInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
-        chr.Inventory.SplitItems()
+        'chr.Inventory.SplitItems()
         writer.WriteLong(-1)
         writer.WriteByte(0)
         addCharStats(writer, chr)
-        writer.WriteByte(0) 'TODO: buddylist
-
+        writer.WriteByte(&H64) 'TODO: buddylist
         writer.WriteBool(False) 'TODO: Linked characters
         addInventoryInfo(writer, chr)
         addSkillInfo(writer, chr)
         addQuestInfo(writer, chr)
-        writer.WriteShort(0)
         addRingInfo(writer, chr)
         addTeleportInfo(writer, chr)
         addMonsterBookInfo(writer, chr)
@@ -295,22 +293,11 @@ Public Class MaplePacketHandler
 
     Private Shared Sub addInventoryInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
         writer.WriteInt(0) 'TODO: Mesos
-        For i = 1 To 5
-            writer.WriteByte(28) 'TODO: Inventory size left
+        For Each slot In chr.slots
+            writer.WriteByte(slot)
         Next
-
-        writer.WriteLong(94354848000000000)
-
-        writer.WriteShort(0)
-        writer.WriteShort(0)
-        writer.WriteShort(0)
-
-        writer.WriteShort(0)
-
-        writer.WriteByte(0)
-        writer.WriteByte(0)
-        writer.WriteByte(0)
-        writer.WriteByte(0)
+        writer.WriteBytes(New Byte() {&H0, &H40, &HE0, &HFD, &H3B, &H37, &H4F, &H1})
+        'iteminfo packet for equipped sword : &HB, &H0, &H1, &HF0, &HDD, &H13, &H0, &H0, &H0, &H80, &H5, &H35, &HA7, &H43, &HBF, &H2, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H11, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H1, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H40, &HE0, &HFD, &H3B, &H37, &H4F, &H1, &HFF, &HFF, &HFF, &HFF
         'For Each item As MapleInventory.Items In chr.Inventory.Equiped
         '    addItemInfo(writer, item)
         'Next
@@ -393,13 +380,20 @@ Public Class MaplePacketHandler
     End Sub
 
     Private Shared Sub addRingInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
-        writer.WriteShort(0)
-        writer.WriteShort(0)
-        writer.WriteShort(0)
+        writer.WriteBytes(New Byte() {&H0, &H1, &H2, &HE9, &H7D, &H3F, &H0, &H0, &H0, &H80, &H5, &H35, &HA7, &H43, &HBF, &H2, &H1, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H1, &H0, &HC, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H80, &H5, &HBB, &H46, &HE6, &H17, &H2, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0, &H0})
+        'writer.WriteShort(0)
+        'writer.WriteShort(0)
+        'writer.WriteShort(0)
     End Sub
 
     Private Shared Sub addTeleportInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
         'TODO: add tele rocks
+        For i = 1 To 5
+            writer.WriteInt(999999999)
+        Next
+        For i = 1 To 10
+            writer.WriteInt(999999999)
+        Next
     End Sub
 
     Private Shared Sub addMonsterBookInfo(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
@@ -413,148 +407,6 @@ Public Class MaplePacketHandler
         'TODO: add quests
         writer.WriteShort(0)
         writer.WriteShort(0)
-    End Sub
-
-    Public Shared Function SendEnterFieldNew(ByRef c As MapleClient)
-        Dim writer As New PacketWriter
-        writer.WriteShort(WARP_TO_MAP)
-        Console.WriteLine("Player Connecting {0},{1}", c.channel.id, c.Player.mapId)
-        Writer.WriteInt(c.channel.id)
-        Writer.WriteByte(0) 'portalcount
-        Writer.WriteBool(True) ' Connect packet
-        Writer.WriteShort(0) ' No field messages
-
-        Dim rnd As New Random()
-        Writer.WriteInt(rnd.Next()) ' Need to create the Random Generator for this
-        Writer.WriteInt(rnd.Next())
-        Writer.WriteInt(rnd.Next())
-
-        Writer.WriteLong(-1) ' All flags set
-
-        Writer.WriteByte(0)
-        AddCharacterData(Writer, c.Player)
-
-        Writer.WriteByte(0) 'buddy list
-
-        Writer.WriteBool(False) ' Blessing of the Fairy name thing
-        ' packet.WriteMapleString(BoFName)
-
-        GetInventoryPacket(Writer, c)
-        GetSkillsPacket(Writer, c)
-        GetQuestsPacket(Writer, c)
-
-        Writer.WriteInt(0)
-        Writer.WriteInt(0)
-
-        'GetRocksPacket(Writer)
-        'GetBookPacket(Writer)
-        Writer.WriteInt(0) ' Cover
-        Writer.WriteBool(False) ' Boolean for 'bytes mode', never true for pservers lol
-        Writer.WriteShort(0)
-
-        Writer.WriteShort(0)
-        Writer.WriteShort(0)
-        Writer.WriteShort(0)
-
-        Writer.WriteLong(DateTime.Now.ToFileTimeUtc())
-
-        Return Writer.ToArray
-
-    End Function
-
-    Public Shared Sub AddCharacterData(ByRef writer As PacketWriter, ByRef chr As MapleCharacter)
-        writer.WriteInt(chr.id)
-        Dim name As String = chr.Name
-        While name.Length < 13
-            name = name & ControlChars.NullChar
-        End While
-        writer.WriteString(chr.Name)
-        writer.WriteByte(chr.Gender)
-        writer.WriteByte(chr.skincolor)
-        writer.WriteInt(chr.face)
-        writer.WriteInt(chr.hair)
-        writer.WriteLong(0) ' Pet ID's
-        writer.WriteLong(0)
-        writer.WriteLong(0)
-        writer.WriteByte(chr.level)
-        writer.WriteShort(chr.job)
-        writer.WriteShort(chr.str)
-        writer.WriteShort(chr.dex)
-        writer.WriteShort(chr.int)
-        writer.WriteShort(chr.luk)
-        writer.WriteShort(chr.curHp)
-        writer.WriteShort(chr.maxHp)
-        writer.WriteShort(chr.curMp)
-        writer.WriteShort(chr.maxMp)
-        writer.WriteShort(chr.ap)
-        If (chr.job / 100) = 22 Then ' Evan job.
-            writer.WriteByte(chr.sp)
-        Else
-            writer.WriteShort(chr.sp)
-        End If
-        writer.WriteInt(chr.exp)
-        writer.WriteShort(chr.fame)
-        writer.WriteInt(0) ' Gachapon EXP
-        writer.WriteInt(chr.mapId)
-        writer.WriteByte(chr.spawnpoint)
-        writer.WriteInt(0)
-    End Sub
-
-    Public Shared Sub GetInventoryPacket(ByRef pPacket As PacketWriter, ByVal c As MapleClient)
-        pPacket.WriteInt(0)
-        For i As Byte = 0 To 4
-            pPacket.WriteByte(c.Player.slots(i))
-        Next
-
-        pPacket.WriteLong(94354848000000000)
-
-        pPacket.WriteShort(0)
-        pPacket.WriteShort(0)
-        pPacket.WriteShort(0)
-
-        pPacket.WriteShort(0)
-
-        pPacket.WriteByte(0)
-        pPacket.WriteByte(0)
-        pPacket.WriteByte(0)
-        pPacket.WriteByte(0)
-    End Sub
-
-    Public Shared Sub GetSkillsPacket(ByRef writer As PacketWriter, ByVal c As MapleClient)
-        writer.WriteShort(0)
-        writer.WriteShort(0)
-        'pPacket.WriteShort(mSkills.Count)
-        'For Each kvp As KeyValuePair(Of Integer, CharacterSkillData) In mSkills
-        '    pPacket.WriteInt(kvp.Key)
-        '    pPacket.WriteInt(kvp.Value.mLevel)
-        '    pPacket.WriteLong(kvp.Value.mExpirationDate)
-        '    If IsFourthJobSkill(kvp.Key) Then
-        '        pPacket.WriteInt(kvp.Value.mMaxLevel)
-        '    End If
-        'Next
-
-        'pPacket.WriteShort(mCooldowns.Count)
-        'For Each kvp As KeyValuePair(Of Integer, Short) In mCooldowns
-        '    pPacket.WriteInt(kvp.Key)
-        '    pPacket.WriteShort(kvp.Value)
-        'Next
-    End Sub
-
-    Public Shared Sub GetQuestsPacket(ByRef writer As PacketWriter, ByVal c As MapleClient)
-        writer.WriteShort(0)
-        writer.WriteShort(0)
-        'pPacket.WriteShort(mActiveQuests.Count)
-        'For Each kvp As KeyValuePair(Of Short, ActiveQuest) In mActiveQuests
-        '    pPacket.WriteShort(kvp.Key)
-        '    pPacket.WriteMapleString(kvp.Value.mData)
-        'Next
-
-        'pPacket.WriteShort(mCompleteQuests.Count)
-        'For Each kvp As KeyValuePair(Of Short, Long) In mCompleteQuests
-        '    pPacket.WriteShort(kvp.Key)
-        '    pPacket.WriteLong(kvp.Value)
-        'Next
-
     End Sub
 
 End Class
