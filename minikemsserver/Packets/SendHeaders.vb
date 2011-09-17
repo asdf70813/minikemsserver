@@ -16,7 +16,6 @@
 Public Enum SendHeaders As UShort
     HandShake = &HE
 
-    'login server
     LOGIN_STATUS = &H0
     SERVERSTATUS = &H3
     ALL_CHARLIST = &H8
@@ -30,4 +29,6 @@ Public Enum SendHeaders As UShort
     SEND_RECOMMENDED = &H1B
     WRONG_PIC = &H1C
     WARP_TO_MAP = &H7D
+    SPAWN_PLAYER = &HA0
+    MOVE_PLAYER = &HB9
 End Enum

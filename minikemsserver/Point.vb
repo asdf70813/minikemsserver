@@ -13,17 +13,12 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Enum RecvHeaders As UShort
-    LOGIN_PASSWORD = &H1
-    SERVERLIST_REREQUEST = &H4
-    CHARLIST_REQUEST = &H5
-    SERVERSTATUS_REQUEST = &H6
-    SERVERLIST_REQUEST = &HB
-    VIEW_ALL_CHAR = &HD
-    PLAYER_LOGGEDIN = &H14
-    CHECK_CHAR_NAME = &H15
-    CREATE_CHAR = &H16
-    REGISTER_PIC = &H1D
-    CHAR_SELECT_WITH_PIC = &H1E
-    MOVE_PLAYER = &H29
-End Enum
+Public Class Point
+    Public x As Integer
+    Public y As Integer
+
+    Sub New(ByVal _x As Integer, ByVal _y As Integer)
+        x = _x
+        y = _y
+    End Sub
+End Class

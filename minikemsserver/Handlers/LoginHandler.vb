@@ -59,6 +59,7 @@ Public Class LoginHandler
         Dim reader As MySqlDataReader = AccountCon.ReadQuery("SELECT * FROM tbl_accounts WHERE account='" & accountName & "'")
         Dim id As Integer = Nothing
         While reader.Read()
+            id = 0
             If accountName.ToLower.Equals(reader.GetString("account").ToLower) Then
                 id = reader.GetInt32("id")
                 If reader.GetString("banned").ToLower.StartsWith("true") Then
@@ -81,6 +82,9 @@ Public Class LoginHandler
         End While
         AccountCon.Dispose()
         If IsNothing(id) Then
+            Return not_registered
+        End If
+        If id = 0 Then
             Return not_registered
         End If
         Return system_error_1

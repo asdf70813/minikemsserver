@@ -13,25 +13,25 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Class MapleChannel
-    Public load As Integer = 0
-    Public id As Short = 0
-    Public players As New List(Of MapleCharacter)
-    Public Maps As New List(Of MapleMap)
+Imports MapleLib.PacketLib
+Public Class AbsoluteLifeMovement
+    Inherits AbstractLifeMovement
 
-    Public Sub EnterMapMessage(ByVal c As MapleClient, ByVal packet As Byte())
-        Dim curMap As MapleMap = Nothing
-        For Each map In Maps
-            If map.id = c.Player.mapId Then
-                curMap = map
-            End If
-        Next
-        If IsNothing(curMap) Then
-            curMap = New MapleMap(c.Player.mapId)
-            Maps.Add(curMap)
-        End If
-        curMap.players.Add(c.Player)
-        curMap.BroadCastMessage(c, packet)
-        c.Player.Map = curMap
+    Public pixelsPerSecond As Point
+    Public Unk As Integer
+
+    Sub New(ByVal _position As Point, ByVal _duration As Integer, ByVal _type As Byte, ByVal _newstate As Byte)
+        MyBase.New(_position, _duration, _type, _newstate)
+    End Sub
+
+    Public Overrides Sub serialize(ByVal writer As PacketWriter)
+        writer.WriteByte(getType1())
+        writer.WriteShort(getPosition().x)
+        writer.WriteShort(getPosition().y)
+        writer.WriteShort(pixelsPerSecond.x)
+        writer.WriteShort(pixelsPerSecond.y)
+        writer.WriteShort(Unk)
+        writer.WriteByte(getNewstate())
+        writer.WriteShort(getDuration())
     End Sub
 End Class

@@ -248,6 +248,7 @@ Public Class MaplePacketHandler
         writer.WriteByte(World.id)
         writer.WriteByte(chrsInWorld.Count)
         For Each chr As MapleCharacter In chrsInWorld
+            chr.Inventory.SplitItems()
             addCharEntry(writer, chr, True)
         Next
         Return writer.ToArray
@@ -482,6 +483,126 @@ Public Class MaplePacketHandler
         writer.WriteShort(0)
         writer.WriteShort(0)
 
+    End Sub
+
+    Shared Function SpawnPlayerOnMap(ByVal c As MapleClient) As Byte()
+        Dim writer As New PacketWriter
+        With writer
+            .WriteShort(SPAWN_PLAYER)
+            .WriteInt(c.Player.id)
+            .WriteByte(c.Player.level)
+            .WriteMapleString(c.Player.Name)
+
+            'TODO: guilds
+            .WriteMapleString("")
+            For i = 1 To 6
+                .WriteByte(0)
+            Next
+            .WriteInt(0)
+            .WriteShort(0)
+            .WriteByte(&HFC)
+            .WriteBool(True)
+
+            'TODO: Morph/buffs
+            .WriteInt(0)
+            .WriteInt(CInt((0 >> 32) And &HFFFFFFFFL))
+            .WriteInt(CInt(0 And &HFFFFFFFFL))
+
+            Dim CHAR_MAGIC_SPAWN = Random()
+            For i = 1 To 6
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            For i = 1 To 11
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            For i = 1 To 11
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            .WriteShort(0)
+            .WriteByte(0)
+
+            'TODO: add monster riding
+            .WriteLong(0)
+
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            For i = 1 To 9
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            .WriteShort(0)
+            .WriteInt(0)
+            For i = 1 To 10
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            For i = 1 To 13
+                .WriteByte(0)
+            Next
+            .WriteInt(CHAR_MAGIC_SPAWN)
+            .WriteShort(0)
+            .WriteByte(0)
+            .WriteShort(c.Player.job)
+            addCharLook(writer, c.Player, False)
+            .WriteInt(0) 'hell idk, look to odinms shizzl
+            .WriteInt(0) 'itemeffect
+            .WriteInt(0) 'chair
+
+            .WriteShort(c.Player.Position.x)
+            .WriteShort(c.Player.Position.y)
+            .WriteByte(c.Player.stance)
+            .WriteShort(0) 'fh
+
+            .WriteByte(0)
+
+            'TODO: add pets
+            .WriteByte(0)
+            .WriteInt(1)
+            .WriteLong(0)
+
+            'TODO: minigames / playershops
+            .WriteByte(0)
+
+            'TODO: chalkboard
+            .WriteByte(0)
+
+            'TODO: rings
+            addRingLook(writer, c.Player, True)
+            addRingLook(writer, c.Player, False)
+            addMarriageRingLook(writer, c.Player)
+
+            .WriteByte(0)
+            .WriteByte(0)
+            .WriteByte(0)
+            .WriteByte(0) 'TODO: player teams
+        End With
+        Return writer.ToArray
+    End Function
+
+    Private Shared Sub addRingLook(ByVal writer As PacketWriter, ByVal Player As MapleCharacter, ByVal crush As Boolean)
+        writer.WriteByte(0)
+    End Sub
+
+    Private Shared Sub addMarriageRingLook(ByVal writer As PacketWriter, ByVal Player As MapleCharacter)
+        writer.WriteByte(0)
+    End Sub
+
+    Shared Function movePlayer(ByVal cid As Integer, ByVal moves As List(Of LifeMovement)) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(MOVE_PLAYER)
+        writer.WriteInt(cid)
+        writer.WriteInt(0)
+        serializeMovementList(writer, moves)
+        Return writer.ToArray
+    End Function
+
+    Private Shared Sub serializeMovementList(ByVal writer As PacketWriter, ByVal moves As List(Of LifeMovement))
+        writer.WriteByte(moves.Count)
+        For Each move As LifeMovement In moves
+            move.serialize(writer)
+        Next
     End Sub
 
 End Class

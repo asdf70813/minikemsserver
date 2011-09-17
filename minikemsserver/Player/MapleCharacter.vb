@@ -45,6 +45,9 @@ Public Class MapleCharacter
     Public slots As Byte() = New Byte(4) {&H60, &H60, &H60, &H60, &H60}
     Public client As MapleClient = Nothing
     Public Inventory As MapleInventory = New MapleInventory()
+    Public Position As New Point(0, 0)
+    Public stance As Byte = 0
+    Public Map As MapleMap = Nothing
 
     Public Sub New(ByVal c As MapleClient, ByVal _name As String, Optional ByVal clean As Boolean = False)
         If clean Then
@@ -193,6 +196,19 @@ Public Class MapleCharacter
         End While
         Return charList
     End Function
+
+    Public Sub UpdatePosition(ByVal movement As List(Of LifeMovement), ByVal yoffset As Integer)
+        For Each move As LifeMovement In movement
+            If TypeOf move Is LifeMovement Then
+                If TypeOf move Is AbsoluteLifeMovement Then
+                    Dim pos As Point = move.getPosition
+                    pos.y += yoffset
+                    Position = pos
+                End If
+                stance = move.getNewstate
+            End If
+        Next
+    End Sub
 
     Public Enum Jobs As Integer
         beginner = 0

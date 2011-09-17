@@ -28,6 +28,10 @@ Module Server
     Sub Main()
         Try
             'Resseting the loggedin values for accounts
+            Console.WriteLine("This file is part of MinikeMSServer." & Environment.NewLine & "MinikeMSServer is free software: you can redistribute it and/or modify" & Environment.NewLine & "it under the terms of the GNU General Public License as published by" & Environment.NewLine & "the Free Software Foundation, either version 3 of the License, or" & Environment.NewLine & "(at your option) any later version." & Environment.NewLine & Environment.NewLine & "MinikeMSServer is distributed in the hope that it will be useful," & Environment.NewLine & "but WITHOUT ANY WARRANTY; without even the implied warranty of" & Environment.NewLine & "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" & Environment.NewLine & "GNU General Public License for more details." & Environment.NewLine & Environment.NewLine & "You should have received a copy of the GNU General Public License" & Environment.NewLine & "along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.WriteLine("Please use 'Stop' to stop the server, this to prevent rollbacks")
+            Console.ForegroundColor = Settings.textColor
             If Not Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory & "\wz") Then
                 Console.WriteLine("[NUB WARNING!] Wz directory not found, niblet")
             End If
@@ -58,6 +62,17 @@ pause:  line = Console.ReadLine()
         If Not line.Contains("stop") And Not line.Contains("exit") Then
             GoTo pause
         End If
+        LoginServer.Dispose()
+reloop: For Each c In Clients
+            c.Disconnect()
+            GoTo reloop
+        Next
+        For Each world In Worlds
+            For Each c In world.Clients
+                c.Disconnect()
+                GoTo reloop
+            Next
+        Next
     End Sub
 
     Private Sub BeginLoginListenerAccept(ByVal pArgs As SocketAsyncEventArgs)

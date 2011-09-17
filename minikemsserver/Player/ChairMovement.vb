@@ -13,17 +13,22 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Enum RecvHeaders As UShort
-    LOGIN_PASSWORD = &H1
-    SERVERLIST_REREQUEST = &H4
-    CHARLIST_REQUEST = &H5
-    SERVERSTATUS_REQUEST = &H6
-    SERVERLIST_REQUEST = &HB
-    VIEW_ALL_CHAR = &HD
-    PLAYER_LOGGEDIN = &H14
-    CHECK_CHAR_NAME = &H15
-    CREATE_CHAR = &H16
-    REGISTER_PIC = &H1D
-    CHAR_SELECT_WITH_PIC = &H1E
-    MOVE_PLAYER = &H29
-End Enum
+Imports MapleLib.PacketLib
+Public Class ChairMovement
+    Inherits AbstractLifeMovement
+
+    Public Unk As Integer
+
+    Sub New(ByVal _position As Point, ByVal _duration As Integer, ByVal _type As Byte, ByVal _newstate As Byte)
+        MyBase.New(_position, _duration, _type, _newstate)
+    End Sub
+
+    Public Overrides Sub serialize(ByVal writer As PacketWriter)
+        writer.WriteByte(getType1())
+        writer.WriteShort(getPosition().x)
+        writer.WriteShort(getPosition().y)
+        writer.WriteShort(Unk)
+        writer.WriteByte(getNewstate())
+        writer.WriteShort(getDuration())
+    End Sub
+End Class
