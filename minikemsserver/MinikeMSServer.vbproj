@@ -101,6 +101,7 @@
     <Compile Include="Handlers\LoginHandler.vb" />
     <Compile Include="LockFreeQueue.vb" />
     <Compile Include="MySQL\MySQLCon.vb" />
+    <Compile Include="ServerInfo\MapleInformationProvider.vb" />
     <Compile Include="ServerInfo\Server.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
