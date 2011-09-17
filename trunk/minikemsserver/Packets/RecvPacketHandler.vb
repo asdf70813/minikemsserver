@@ -42,6 +42,8 @@ Public Class RecvPacketHandler
                 handler = New SelectCharHandler(packetReader, c)
             Case PLAYER_LOGGEDIN
                 handler = New PlayerLoggedinHandler(packetReader, c)
+            Case MOVE_PLAYER
+                handler = New PlayerMovingHandler(packetReader, c)
             Case Else
                 Console.WriteLine("[WARNING] Unhandled Header({0})", Hex(pHeader))
         End Select

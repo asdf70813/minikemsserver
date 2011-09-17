@@ -13,17 +13,19 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Enum RecvHeaders As UShort
-    LOGIN_PASSWORD = &H1
-    SERVERLIST_REREQUEST = &H4
-    CHARLIST_REQUEST = &H5
-    SERVERSTATUS_REQUEST = &H6
-    SERVERLIST_REQUEST = &HB
-    VIEW_ALL_CHAR = &HD
-    PLAYER_LOGGEDIN = &H14
-    CHECK_CHAR_NAME = &H15
-    CREATE_CHAR = &H16
-    REGISTER_PIC = &H1D
-    CHAR_SELECT_WITH_PIC = &H1E
-    MOVE_PLAYER = &H29
-End Enum
+Public Class MapleMap
+    Public id As Short = 0
+    Public players As New List(Of MapleCharacter)
+
+    Sub New(ByVal mapID As Short)
+        id = mapID
+    End Sub
+
+    Public Sub BroadCastMessage(ByVal c As MapleClient, ByVal packet As Byte())
+        For Each chr As MapleCharacter In players
+            If chr.mapId = c.Player.mapId And Not chr.Equals(c.Player) Then
+                chr.client.SendPacket(packet)
+            End If
+        Next
+    End Sub
+End Class

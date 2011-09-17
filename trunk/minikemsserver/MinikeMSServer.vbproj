@@ -91,8 +91,16 @@
     <Compile Include="Handlers\ServerStatusRequestHandler.vb" />
     <Compile Include="Handlers\SelectCharHandler.vb" />
     <Compile Include="Handlers\PlayerLoggedinHandler.vb" />
+    <Compile Include="Handlers\PlayerMovingHandler.vb" />
+    <Compile Include="Player\AbsoluteLifeMovement.vb" />
+    <Compile Include="Player\AbstractLifeMovement.vb" />
+    <Compile Include="Player\ChairMovement.vb" />
+    <Compile Include="Player\JumpDownMovement.vb" />
+    <Compile Include="Player\LifeMovement.vb" />
     <Compile Include="Player\MapleCharacter.vb" />
     <Compile Include="Player\MapleInventory.vb" />
+    <Compile Include="Player\RelativeLifeMovement.vb" />
+    <Compile Include="Point.vb" />
     <Compile Include="ServerInfo\MapleChannel.vb" />
     <Compile Include="ServerInfo\MapleClient.vb" />
     <Compile Include="Coordinates.vb" />
@@ -102,6 +110,7 @@
     <Compile Include="LockFreeQueue.vb" />
     <Compile Include="MySQL\MySQLCon.vb" />
     <Compile Include="ServerInfo\MapleInformationProvider.vb" />
+    <Compile Include="ServerInfo\MapleMap.vb" />
     <Compile Include="ServerInfo\Server.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
