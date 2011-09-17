@@ -71,13 +71,13 @@ Class CreateCharHandler
         Select Case job
             Case 0
                 newCharacter.job = MapleCharacter.Jobs.Noblesse
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161047, 0, 1, 0))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161047, 1, 1, 0))
             Case 2
                 newCharacter.job = MapleCharacter.Jobs.Legend
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161048, 0, 1, 0))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161048, 1, 1, 0))
             Case Else 'default, could ban for > 2 though
                 newCharacter.job = MapleCharacter.Jobs.beginner
-                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161001, 0, 1, 0))
+                inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Etc, 4161001, 1, 1, 0))
         End Select
         inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, top, -5, 1, 0))
         inventory.ItemList.Add(New MapleInventory.Items(MapleInventory.Types.Equipped, bottom, -6, 1, 0))

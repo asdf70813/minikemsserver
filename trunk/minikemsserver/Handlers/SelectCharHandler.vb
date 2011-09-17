@@ -14,6 +14,7 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Imports MapleLib.PacketLib
+Imports MinikeMSServer.Functions
 
 Class SelectCharHandler
 #Region "IDisposable"
@@ -38,8 +39,9 @@ Class SelectCharHandler
                 pendingClient.world = c.world
                 pendingClient.Player = MapleCharacter.LoadFromDB(pendingClient, pendingClient.world.id, charId)(0)
                 pendingClient.channel = c.channel
-                pendingClient.specialID = CInt(&H7FFFFF - (((charId * 7 ^ 2) Mod 5) * 123.5)) - charId
+                pendingClient.specialID = MakeSpecialID(charId, c)
                 c.world.PendingClients.Add(pendingClient)
+                c.cloned = True
                 packet = MaplePacketHandler.getServerIP(c.world.ipToByteArray(), c.world.port, pendingClient.specialID)
             Else
                 packet = MaplePacketHandler.WrongPic()
