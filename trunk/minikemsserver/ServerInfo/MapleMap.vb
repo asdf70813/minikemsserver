@@ -15,7 +15,7 @@
 
 Public Class MapleMap
     Public id As Short = 0
-    Public players As New List(Of MapleCharacter)
+    Private players As New List(Of MapleCharacter)
 
     Sub New(ByVal mapID As Short)
         id = mapID
@@ -26,6 +26,22 @@ Public Class MapleMap
             If chr.mapId = c.Player.mapId And Not chr.Equals(c.Player) Then
                 chr.client.SendPacket(packet)
             End If
+        Next
+    End Sub
+
+    Public Sub AddPlayer(ByVal Player As MapleCharacter)
+        For Each character In players
+            Dim packet As Byte() = MaplePacketHandler.SpawnPlayerOnMap(character.client)
+            Player.client.SendPacket(packet)
+        Next
+        players.Add(Player)
+    End Sub
+
+    Public Sub RemovePlayer(ByVal player As MapleCharacter)
+        players.Remove(player)
+        For Each character In players
+            Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(character.id)
+            player.client.SendPacket(packet)
         Next
     End Sub
 End Class

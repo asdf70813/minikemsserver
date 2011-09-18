@@ -78,6 +78,12 @@ Public Class MapleCharacter
         'TODO: Add inventory,keymap, etc
     End Sub
 
+    Public Sub disconnect()
+        Me.SaveToDB(False, Me.client)
+        Me.Map.RemovePlayer(Me)
+        Me.client.channel.players.Remove(Me)
+    End Sub
+
     Public Function SaveToDB(ByVal newchr As Boolean, ByVal c As MapleClient) As MapleCharacter
         Dim retChar As MapleCharacter = Nothing
         If newchr Then

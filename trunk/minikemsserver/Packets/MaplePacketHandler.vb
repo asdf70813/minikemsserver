@@ -605,4 +605,11 @@ Public Class MaplePacketHandler
         Next
     End Sub
 
+    Shared Function RemovePlayerFromMap(ByVal cid As Integer) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(REMOVE_PLAYER_FROM_MAP)
+        writer.WriteInt(cid)
+        Return writer.ToArray
+    End Function
+
 End Class

@@ -1,4 +1,4 @@
-﻿'    This file is part of MinikeMSServer.
+'    This file is part of MinikeMSServer.
 
 '    MinikeMSServer is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by
@@ -47,7 +47,8 @@ Public Class MapleInventory
                 End While
                 reader.Dispose()
                 If count = 1 And Not sqlID = 0 Then
-                    query = "UPDATE tbl_inventory SET itemid='" & item.id &
+                    query = "UPDATE tbl_inventory SET unk='" & item.unk &
+                        "' AND itemid='" & item.id &
                         "' AND position='" & item.position &
                         "' AND type='" & item.type &
                         "' AND quantity='" & item.quantity &
@@ -58,6 +59,7 @@ Public Class MapleInventory
                         "' AND charid='" & item.charID &
                         "' AND equipid='" & item.EquipID &
                         "' WHERE id='" & item.sqlID & "'"
+                    Console.WriteLine(item.id)
                 ElseIf count > 1 And Not sqlID = 0 Then
                     Console.WriteLine("[WARNING] Double item count id={0}", sqlID)
                 Else
@@ -115,6 +117,7 @@ Public Class MapleInventory
                                     "'" & sqlID & "')"
                             Else
                                 query = "UPDATE tbl_equips SET " &
+                                    "unk='" & stats.unk & "' AND " &
                                     "slots='" & stats.slots & "' AND " &
                                     "str='" & stats.str & "' AND " &
                                     "dex='" & stats.dex & "' AND " &
@@ -135,7 +138,7 @@ Public Class MapleInventory
                                     "itemlevel='" & stats.itemlevel & "' AND " &
                                     "itemexp='" & stats.itemexp & "' AND " &
                                     "vicious='" & stats.vicious & "' AND " &
-                                    "inventoryid='" & sqlID & "' AND " &
+                                    "inventoryid='" & sqlID & "'" &
                                     " WHERE inventoryid='" & sqlID & "'"
                             End If
                             itemAddCon.ExecuteQuery(query)
@@ -267,6 +270,7 @@ Public Class MapleInventory
         Public giftFrom As String = ""
         Public EquipID As Integer = 0
         Public Stats As EquipStats = Nothing
+        Public unk As Integer = 0 'some wierd bug, long story
 
         Sub New(ByVal _type As Short, ByVal _id As Integer, ByVal _posistion As Short, ByVal _quantity As Short, ByVal _charid As Integer)
             type = _type
@@ -282,6 +286,7 @@ Public Class MapleInventory
     End Class
 
     Public Class EquipStats
+        Public unk As Integer = 0 'some wierd bug, long story
         Public slots As Byte = 0
         Public reqlevel As Byte = 0
         Public reqjob As Short = 0
