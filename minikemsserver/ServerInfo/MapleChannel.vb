@@ -30,7 +30,7 @@ Public Class MapleChannel
             curMap = New MapleMap(c.Player.mapId)
             Maps.Add(curMap)
         End If
-        curMap.players.Add(c.Player)
+        curMap.AddPlayer(c.Player)
         curMap.BroadCastMessage(c, packet)
         c.Player.Map = curMap
     End Sub

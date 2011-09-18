@@ -30,5 +30,6 @@ Public Enum SendHeaders As UShort
     WRONG_PIC = &H1C
     WARP_TO_MAP = &H7D
     SPAWN_PLAYER = &HA0
+    REMOVE_PLAYER_FROM_MAP = &HA1
     MOVE_PLAYER = &HB9
 End Enum

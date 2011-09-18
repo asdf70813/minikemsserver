@@ -70,7 +70,7 @@ Public NotInheritable Class MapleClient
             mSocket = pSocket
             mReceiveBuffer = New Byte(MAX_RECEIVE_BUFFER - 1) {}
             mHost = DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Address.ToString()
-            Console.WriteLine("[{0}:{1}] Connected", mHost, DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Port.ToString)
+            Console.WriteLine("[{0}:{1}] Connected", mHost, DirectCast(mSocket.LocalEndPoint, IPEndPoint).Port.ToString)
             WaitForData()
         End If
     End Sub
@@ -169,7 +169,7 @@ Public NotInheritable Class MapleClient
             If LoggedIn > 0 Then
                 LogOut()
             End If
-            Console.WriteLine("[{0}:{1}] Disconnected", Host, DirectCast(mSocket.RemoteEndPoint, IPEndPoint).Port.ToString)
+            Console.WriteLine("[{0}:{1}] Disconnected", Host, DirectCast(mSocket.LocalEndPoint, IPEndPoint).Port.ToString)
             mSocket.Shutdown(SocketShutdown.Both)
             mSocket.Close()
             Server.ClientDisconnected(Me)
@@ -179,9 +179,17 @@ Public NotInheritable Class MapleClient
 
     Public Sub LogOut()
         If Not cloned Then
+            Try
+                If Not IsNothing(Me.Player) Then
+                    Me.Player.disconnect()
+                End If
+            Catch ex As Exception
+                Console.WriteLine("[ERROR] Something went wrong while disconnecting player {0}", ex.ToString)
+            End Try
             Dim loggedinCon As New MySQLCon(Settings.ConnectionString)
-            loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE account='" & AccountName & "'")
+            loggedinCon.ExecuteQuery("UPDATE tbl_accounts SET loggedin='0' WHERE id='" & AccountID & "'")
             loggedinCon.Dispose()
+            Me.LoggedIn = 0
         End If
     End Sub
 

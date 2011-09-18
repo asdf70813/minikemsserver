@@ -40,12 +40,9 @@ Class PlayerLoggedinHandler
             Dim packet As Byte()
             packet = MaplePacketHandler.getCharInfo(c.Player)
             c.SendPacket(packet)
-            For Each player In c.channel.players
-                If player.mapId = c.Player.mapId Then
-                    packet = MaplePacketHandler.SpawnPlayerOnMap(player.client)
-                    c.channel.EnterMapMessage(player.client, packet)
-                End If
-            Next
+            packet = MaplePacketHandler.SpawnPlayerOnMap(c)
+            c.channel.EnterMapMessage(c, packet)
+            c.LoggedIn = 1
         Catch ex As Exception
             Dim packet As Byte()
             packet = MaplePacketHandler.getAfterLoginError(7)
