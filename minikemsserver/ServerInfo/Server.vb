@@ -62,17 +62,14 @@ pause:  line = Console.ReadLine()
         If Not line.Contains("stop") And Not line.Contains("exit") Then
             GoTo pause
         End If
+        For Each c In Clients
+            Try
+                c.Player.disconnect()
+            Catch ex As Exception
+
+            End Try
+        Next
         LoginServer.Dispose()
-reloop: For Each c In Clients
-            c.Disconnect()
-            GoTo reloop
-        Next
-        For Each world In Worlds
-            For Each c In world.Clients
-                c.Disconnect()
-                GoTo reloop
-            Next
-        Next
     End Sub
 
     Private Sub BeginLoginListenerAccept(ByVal pArgs As SocketAsyncEventArgs)

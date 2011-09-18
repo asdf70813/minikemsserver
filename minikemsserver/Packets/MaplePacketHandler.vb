@@ -612,4 +612,36 @@ Public Class MaplePacketHandler
         Return writer.ToArray
     End Function
 
+    Shared Function getChatText(ByVal Player As MapleCharacter, ByVal text As String, ByVal show As Byte) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(CHATTEXT)
+        writer.WriteInt(Player.id)
+        writer.WriteBool(Player.IsGM)
+        writer.WriteMapleString(text)
+        writer.WriteByte(show)
+        Return writer.ToArray
+    End Function
+
+    Shared Function warpPlayerToMap(ByVal c As MapleClient, ByVal spawnpoint As Integer) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(WARP_TO_MAP)
+        writer.WriteInt(c.channel.id)
+        writer.WriteInt(0)
+        writer.WriteByte(0)
+        writer.WriteInt(c.Player.mapId)
+        writer.WriteByte(spawnpoint)
+        writer.WriteShort(c.Player.curHp)
+        writer.WriteByte(0)
+        writer.WriteLong(DateTime.Now.ToFileTimeUtc())
+        Return writer.ToArray
+    End Function
+
+    Shared Function facialExpression(ByVal cid As Integer, ByVal emoticon As Integer) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(FACIAL_EXPRESSION)
+        writer.WriteInt(cid)
+        writer.WriteInt(emoticon)
+        Return writer.ToArray
+    End Function
+
 End Class

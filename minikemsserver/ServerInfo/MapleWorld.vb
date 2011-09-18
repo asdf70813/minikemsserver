@@ -119,4 +119,13 @@ Public Class MapleWorld
             Clients.Remove(pClient)
         End SyncLock
     End Sub
+
+    Public Function getPlayerByname(ByVal name As String) As MapleCharacter
+        For Each c In Clients
+            If c.Player.Name.ToLower.Equals(name) Then
+                Return c.Player
+            End If
+        Next
+        Return Nothing
+    End Function
 End Class

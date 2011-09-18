@@ -84,8 +84,10 @@
     <Compile Include="Handlers\CharlistRequestHandler.vb" />
     <Compile Include="Handlers\CheckCharNameHandler.vb" />
     <Compile Include="Handlers\CreateCharHandler.vb" />
+    <Compile Include="Handlers\FaceExpressionHandler.vb" />
     <Compile Include="Handlers\RegisterPICHandler.vb" />
     <Compile Include="Handlers\ViewAllCharsHandler.vb" />
+    <Compile Include="Handlers\GeneralChatHandler.vb" />
     <Compile Include="Packets\MaplePacketHandler.vb" />
     <Compile Include="Handlers\ServerlistRequestHandler.vb" />
     <Compile Include="Handlers\ServerStatusRequestHandler.vb" />
@@ -95,6 +97,7 @@
     <Compile Include="Player\AbsoluteLifeMovement.vb" />
     <Compile Include="Player\AbstractLifeMovement.vb" />
     <Compile Include="Player\ChairMovement.vb" />
+    <Compile Include="Player\GMCommands.vb" />
     <Compile Include="Player\JumpDownMovement.vb" />
     <Compile Include="Player\LifeMovement.vb" />
     <Compile Include="Player\MapleCharacter.vb" />
