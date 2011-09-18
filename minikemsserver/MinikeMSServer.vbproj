@@ -88,6 +88,8 @@
     <Compile Include="Handlers\RegisterPICHandler.vb" />
     <Compile Include="Handlers\ViewAllCharsHandler.vb" />
     <Compile Include="Handlers\GeneralChatHandler.vb" />
+    <Compile Include="Handlers\ChangeChannelHandler.vb" />
+    <Compile Include="Handlers\ChangeMapHandler.vb" />
     <Compile Include="Packets\MaplePacketHandler.vb" />
     <Compile Include="Handlers\ServerlistRequestHandler.vb" />
     <Compile Include="Handlers\ServerStatusRequestHandler.vb" />

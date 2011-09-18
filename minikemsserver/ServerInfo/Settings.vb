@@ -19,7 +19,7 @@ Public Class Settings
     Public Shared ReadOnly textColor As ConsoleColor = ConsoleColor.Cyan
 
     Public Shared ReadOnly Port As UShort = 8484
-    Public Shared ReadOnly IP As String = "0.0.0.0"
+    Public Shared ReadOnly IP As String = "127.0.0.1"
     Public Shared ReadOnly mapleVersion As Short = 83
 
     '{port,channelcount,name,flag,eventmessage,worldip}

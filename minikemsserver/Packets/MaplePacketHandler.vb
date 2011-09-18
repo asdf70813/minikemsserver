@@ -282,7 +282,7 @@ Public Class MaplePacketHandler
     Shared Function getCharInfo(ByVal chr As MapleCharacter) As Byte()
         Dim writer As New PacketWriter
         writer.WriteShort(WARP_TO_MAP)
-        writer.WriteInt(chr.client.channel.id)
+        writer.WriteInt(chr.client.channel.id - 1)
         writer.WriteBytes(New Byte() {1, 1, 0, 0})
         writer.WriteInt(Random())
         writer.WriteInt(Random())
@@ -641,6 +641,15 @@ Public Class MaplePacketHandler
         writer.WriteShort(FACIAL_EXPRESSION)
         writer.WriteInt(cid)
         writer.WriteInt(emoticon)
+        Return writer.ToArray
+    End Function
+
+    Shared Function getChangeChannel(ByVal ip As Byte(), ByVal port As Short) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(CHANGE_CHANNEL)
+        writer.WriteByte(1)
+        writer.WriteBytes(ip)
+        writer.WriteShort(port)
         Return writer.ToArray
     End Function
 

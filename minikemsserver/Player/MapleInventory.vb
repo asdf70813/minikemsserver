@@ -59,7 +59,6 @@ Public Class MapleInventory
                         "' AND charid='" & item.charID &
                         "' AND equipid='" & item.EquipID &
                         "' WHERE id='" & item.sqlID & "'"
-                    Console.WriteLine(item.id)
                 ElseIf count > 1 And Not sqlID = 0 Then
                     Console.WriteLine("[WARNING] Double item count id={0}", sqlID)
                 Else

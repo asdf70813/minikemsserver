@@ -14,7 +14,9 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Imports MapleLib.PacketLib
-Class CharlistRequestHandler
+Imports MinikeMSServer.Functions
+
+Class ChangeChannelHandler
 #Region "IDisposable"
     Implements IDisposable
     Private disposedValue As Boolean = False
@@ -24,11 +26,20 @@ Class CharlistRequestHandler
     End Sub
 #End Region
     Sub New(ByVal packetReader As PacketReader, ByVal c As MapleClient)
-        packetReader.ReadByte()
-        c.world = Server.Worlds(packetReader.ReadByte())
-        c.channel = c.world.Channels(packetReader.ReadByte())
-        Dim packet As Byte()
-        packet = MaplePacketHandler.sendCharList(c)
+        Dim newChannelID As Integer = packetReader.ReadByte
+        Dim packet As Byte() = MaplePacketHandler.getChangeChannel(c.world.ipToByteArray(), c.world.port)
+        c.channel.players.Remove(c.Player)
+        c.Player.SaveToDB(False, c)
+        c.Player.Map.RemovePlayer(c.Player)
+        Dim pendingClient As New MapleClient(Nothing, True)
+        pendingClient.AccountID = c.AccountID
+        pendingClient.AccountName = c.AccountName
+        pendingClient.world = c.world
+        pendingClient.Player = c.Player
+        pendingClient.channel = c.world.Channels(newChannelID)
+        pendingClient.specialID = c.specialID
+        c.world.PendingClients.Add(pendingClient)
+        c.cloned = True
         c.SendPacket(packet)
         Me.Dispose()
     End Sub

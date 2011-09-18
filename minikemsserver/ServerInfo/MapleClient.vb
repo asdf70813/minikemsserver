@@ -165,6 +165,7 @@ Public NotInheritable Class MapleClient
     End Sub
 
     Public Sub Disconnect()
+        On Error Resume Next
         If Interlocked.CompareExchange(mDisconnected, 1, 0) = 0 Then
             If LoggedIn > 0 Then
                 LogOut()
