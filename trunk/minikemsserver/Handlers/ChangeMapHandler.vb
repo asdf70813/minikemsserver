@@ -13,26 +13,25 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Enum SendHeaders As UShort
-    HandShake = &HE
+Imports MapleLib.PacketLib
 
-    LOGIN_STATUS = &H0
-    SERVERSTATUS = &H3
-    ALL_CHARLIST = &H8
-    AFTER_LOGIN_ERROR = &H9
-    CHANGE_CHANNEL = &H10
-    SERVERLIST = &HA
-    CHARLIST = &HB
-    SERVER_IP = &HC
-    CHAR_NAME_RESPONSE = &HD
-    ADD_NEW_CHAR_ENTRY = &HE
-    SELECT_WORLD = &H1A
-    SEND_RECOMMENDED = &H1B
-    WRONG_PIC = &H1C
-    WARP_TO_MAP = &H7D
-    SPAWN_PLAYER = &HA0
-    REMOVE_PLAYER_FROM_MAP = &HA1
-    CHATTEXT = &HA2
-    MOVE_PLAYER = &HB9
-    FACIAL_EXPRESSION = &HC1
-End Enum
+Class ChangeMapHandler
+#Region "IDisposable"
+    Implements IDisposable
+    Private disposedValue As Boolean = False
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+
+    End Sub
+#End Region
+
+    Sub New(ByVal packetReader As PacketReader, ByVal c As MapleClient)
+        packetReader.ReadByte()
+        Dim targetMapID As Integer = packetReader.ReadInt
+        Dim portal As String = packetReader.ReadMapleString
+        packetReader.ReadByte()
+        Dim weel As Boolean = packetReader.ReadShort > 0
+        Me.Dispose()
+    End Sub
+
+End Class

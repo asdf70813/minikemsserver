@@ -126,6 +126,43 @@ Public Class MapleInformationProvider
         End Function
     End Class
 
+    Public Class Portal
+        Public Shared Function getSpawnPointForPortal(ByVal Map As MapleMap, ByVal MapIdTo As Integer, ByVal portalName As String) As Integer
+            Dim retVal As Integer = 0
+            Dim mapid As String = Map.id
+            While mapid.Length < 9
+                mapid = "0" & mapid
+            End While
+            Dim startNum As Char = mapid.ToCharArray()(0)
+            Dim file = FileSearch(System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum, mapid & ".img.xml")
+            If file = "Nothing" Then
+                Console.WriteLine("[ERROR] xml not found file={0}", System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum)
+                Return Nothing
+            End If
+            Dim xml As New XmlDocument
+            Dim nodelist As XmlNodeList
+            Dim node As XmlNode
+            Dim child As XmlNode
+            Dim subChild As XmlNode
+            Dim pn As String
+            xml.Load(file)
+            nodelist = xml.SelectNodes("/imgdir/imgdir")
+            For Each node In nodelist
+                If node.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("info") Then
+                    For Each child In node.ChildNodes
+                        For Each subChild In child.ChildNodes
+                            If subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pn") Then
+                                pn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                            End If
+                        Next
+                    Next
+                End If
+            Next
+            Return retVal
+        End Function
+
+    End Class
+
     Public Shared Function RandomizeStat(ByVal in_val As Integer, ByVal max_range As Integer)
         Dim stat = in_val
         If stat = 0 Then

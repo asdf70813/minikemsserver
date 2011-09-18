@@ -64,12 +64,14 @@ pause:  line = Console.ReadLine()
         End If
         For Each c In Clients
             Try
-                c.Player.disconnect()
+                c.Player.SaveToDB(False, c)
             Catch ex As Exception
 
             End Try
         Next
-        LoginServer.Dispose()
+        Console.ForegroundColor = ConsoleColor.Green
+        Console.WriteLine("All players are save, you can close this now")
+        GoTo pause
     End Sub
 
     Private Sub BeginLoginListenerAccept(ByVal pArgs As SocketAsyncEventArgs)
