@@ -250,18 +250,10 @@ Public NotInheritable Class MapleClient
         End If
     End Sub
 
-    ''' <summary>
-    ''' Encrypts the packet then send it to the client.
-    ''' </summary>
-    ''' <param name="packet">The PacketWrtier object to be sent.</param>
     Public Sub SendPacket(ByVal packet As PacketWriter)
         SendPacket(packet.ToArray())
     End Sub
 
-    ''' <summary>
-    ''' Encrypts the packet then send it to the client.
-    ''' </summary>
-    ''' <param name="input">The byte array to be sent.</param>
     Public Sub SendPacket(ByVal input As Byte())
         Try
             Dim cryptData As Byte() = input
@@ -280,15 +272,11 @@ Public NotInheritable Class MapleClient
         End Try
     End Sub
 
-    ''' <summary>
-    ''' Sends a raw buffer to the client.
-    ''' </summary>
-    ''' <param name="buffer">The buffer to be sent.</param>
     Public Sub SendRawPacket(ByVal buffer As Byte())
         Try
             mSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, Function(ar) mSocket.EndSend(ar), Nothing)
         Catch generatedExceptionName As SocketException
-            Me.Disconnect()
+            'gets here when pressing X on maple
         End Try
     End Sub
 End Class

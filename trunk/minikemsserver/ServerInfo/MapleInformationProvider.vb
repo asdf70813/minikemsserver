@@ -127,9 +127,9 @@ Public Class MapleInformationProvider
     End Class
 
     Public Class Portal
-        Public Shared Function getSpawnPointForPortal(ByVal Map As MapleMap, ByVal MapIdTo As Integer, ByVal portalName As String) As Integer
-            Dim retVal As Integer = 0
-            Dim mapid As String = Map.id
+        Public Shared Function getPortalInfo(ByVal _mapid As Integer, ByVal portalName As String) As Integer()
+            Dim retVal As Integer() = New Integer() {0, 0}
+            Dim mapid As String = _mapid
             While mapid.Length < 9
                 mapid = "0" & mapid
             End While
@@ -144,23 +144,88 @@ Public Class MapleInformationProvider
             Dim node As XmlNode
             Dim child As XmlNode
             Dim subChild As XmlNode
-            Dim pn As String
+            Dim pn As String = ""
+            Dim tn As String = ""
+
             xml.Load(file)
             nodelist = xml.SelectNodes("/imgdir/imgdir")
             For Each node In nodelist
-                If node.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("info") Then
+                If node.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("portal") Then
                     For Each child In node.ChildNodes
                         For Each subChild In child.ChildNodes
                             If subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pn") Then
-                                pn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                If subChild.Attributes.GetNamedItem("value").Value.ToString.ToLower.Equals(portalName.ToLower) Then
+                                    pn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                    Exit For
+                                End If
                             End If
                         Next
+                        For Each subChild In child.ChildNodes
+                            If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("tn") Then
+                                tn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                Exit For
+                            End If
+                        Next
+                        For Each subChild In child.ChildNodes
+                            If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("tm") Then
+                                retVal(1) = CInt(subChild.Attributes.GetNamedItem("value").Value.ToString)
+                                retVal(0) = getSpawnPointForPortal(retVal(1), tn)
+                                Return retVal
+                            End If
+                        Next
+                        If retVal(0) <> 0 Then
+                            Exit For
+                        End If
                     Next
+                End If
+                If retVal(0) <> 0 Then
+                    Exit For
                 End If
             Next
             Return retVal
         End Function
 
+        Public Shared Function getSpawnPointForPortal(ByVal _mapid As Integer, ByVal portalName As String) As Integer
+            Dim mapid As String = _mapid
+            While mapid.Length < 9
+                mapid = "0" & mapid
+            End While
+            Dim startNum As Char = mapid.ToCharArray()(0)
+            Dim file = FileSearch(System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum, mapid & ".img.xml")
+            If file = "Nothing" Then
+                Console.WriteLine("[ERROR] xml not found file={0}", System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum)
+                Return Nothing
+            End If
+            Dim xml As New XmlDocument
+            Dim nodelist As XmlNodeList
+            Dim node As XmlNode
+            Dim child As XmlNode
+            Dim subChild As XmlNode
+            Dim pn As String = ""
+
+            xml.Load(file)
+            nodelist = xml.SelectNodes("/imgdir/imgdir")
+            For Each node In nodelist
+                If node.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("portal") Then
+                    For Each child In node.ChildNodes
+                        For Each subChild In child.ChildNodes
+                            If subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pn") Then
+                                If subChild.Attributes.GetNamedItem("value").Value.ToString.ToLower.Equals(portalName.ToLower) Then
+                                    pn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                    Exit For
+                                End If
+                            End If
+                        Next
+                        For Each subChild In child.ChildNodes
+                            If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pt") Then
+                                Return CInt(subChild.Attributes.GetNamedItem("value").Value.ToString)
+                            End If
+                        Next
+                    Next
+                End If
+            Next
+            Return 0
+        End Function
     End Class
 
     Public Shared Function RandomizeStat(ByVal in_val As Integer, ByVal max_range As Integer)
