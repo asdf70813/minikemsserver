@@ -30,6 +30,7 @@ Class PlayerMovingHandler
         Dim packet As Byte()
         packet = MaplePacketHandler.movePlayer(c.Player.id, res)
         c.Player.Map.BroadCastMessage(c, packet)
+        Me.Dispose()
     End Sub
 
     Public Function parseMovement(ByVal packetReader As PacketReader, ByVal c As MapleClient) As List(Of LifeMovement)

@@ -31,5 +31,7 @@ Public Enum SendHeaders As UShort
     WARP_TO_MAP = &H7D
     SPAWN_PLAYER = &HA0
     REMOVE_PLAYER_FROM_MAP = &HA1
+    CHATTEXT = &HA2
     MOVE_PLAYER = &HB9
+    FACIAL_EXPRESSION = &HC1
 End Enum

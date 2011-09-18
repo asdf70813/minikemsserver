@@ -26,4 +26,6 @@ Public Enum RecvHeaders As UShort
     REGISTER_PIC = &H1D
     CHAR_SELECT_WITH_PIC = &H1E
     MOVE_PLAYER = &H29
+    GENERAL_CHAT = &H31
+    FACE_EXPRESSION = &H33
 End Enum

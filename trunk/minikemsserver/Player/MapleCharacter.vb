@@ -216,6 +216,27 @@ Public Class MapleCharacter
         Next
     End Sub
 
+    Public Sub warp(ByVal mapid As Integer, ByVal spawnpoint As Integer)
+        Me.mapId = mapid
+        Me.spawnpoint = spawnpoint
+        Me.Map.RemovePlayer(Me)
+        Dim newMap As MapleMap = Nothing
+        For Each _Map In Me.client.channel.Maps
+            If _Map.id = Me.client.Player.mapId Then
+                newMap = _Map
+                Exit For
+            End If
+        Next
+        If IsNothing(newMap) Then
+            newMap = New MapleMap(Me.mapId)
+            Me.client.channel.Maps.Add(newMap)
+        End If
+        newMap.AddPlayer(Me)
+        Me.Map = newMap
+        Dim packet As Byte() = MaplePacketHandler.warpPlayerToMap(Me.client, spawnpoint)
+        Me.client.SendPacket(packet)
+    End Sub
+
     Public Enum Jobs As Integer
         beginner = 0
 

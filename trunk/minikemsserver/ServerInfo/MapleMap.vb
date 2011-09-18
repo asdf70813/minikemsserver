@@ -14,16 +14,16 @@
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
 Public Class MapleMap
-    Public id As Short = 0
+    Public id As Integer = 0
     Private players As New List(Of MapleCharacter)
 
-    Sub New(ByVal mapID As Short)
+    Sub New(ByVal mapID As Integer)
         id = mapID
     End Sub
 
     Public Sub BroadCastMessage(ByVal c As MapleClient, ByVal packet As Byte())
         For Each chr As MapleCharacter In players
-            If chr.mapId = c.Player.mapId And Not chr.Equals(c.Player) Then
+            If Not chr.Equals(c.Player) Then
                 chr.client.SendPacket(packet)
             End If
         Next
@@ -38,10 +38,10 @@ Public Class MapleMap
     End Sub
 
     Public Sub RemovePlayer(ByVal player As MapleCharacter)
-        players.Remove(player)
         For Each character In players
-            Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(character.id)
-            player.client.SendPacket(packet)
+            Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(player.id)
+            character.client.SendPacket(packet)
         Next
+        players.Remove(player)
     End Sub
 End Class

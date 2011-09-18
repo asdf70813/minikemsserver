@@ -24,6 +24,7 @@ Public Class MapleChannel
         For Each map In Maps
             If map.id = c.Player.mapId Then
                 curMap = map
+                Exit For
             End If
         Next
         If IsNothing(curMap) Then
@@ -34,4 +35,13 @@ Public Class MapleChannel
         curMap.BroadCastMessage(c, packet)
         c.Player.Map = curMap
     End Sub
+
+    Public Function getPlayerByname(ByVal name As String) As MapleCharacter
+        For Each player In players
+            If player.Name.ToLower.Equals(name) Then
+                Return player
+            End If
+        Next
+        Return Nothing
+    End Function
 End Class
