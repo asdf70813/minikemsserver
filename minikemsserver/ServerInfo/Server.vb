@@ -18,7 +18,6 @@ Imports System.Net
 Imports MinikeMSServer.Functions
 Imports MapleLib.MapleCryptoLib
 Imports System.IO
-
 Module Server
     Private LoginServer As Socket
     Private Clients As New List(Of MapleClient)

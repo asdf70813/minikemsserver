@@ -31,6 +31,9 @@ Class ChangeMapHandler
         Dim portal As String = packetReader.ReadMapleString
         packetReader.ReadByte()
         Dim weel As Boolean = packetReader.ReadShort > 0
+        Dim info As Integer() = MapleInformationProvider.Portal.getPortalInfo(c.Player.Map.id, portal)
+        c.Player.warp(info(1), info(0))
+        Console.WriteLine(info(0))
         Me.Dispose()
     End Sub
 
