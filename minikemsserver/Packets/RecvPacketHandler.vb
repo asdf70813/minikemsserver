@@ -15,16 +15,18 @@
 
 Imports MapleLib.PacketLib
 Imports MinikeMSServer.RecvHeaders
+Imports MinikeMSServer.Functions
 
 Public Class RecvPacketHandler
 
-    Sub HandlePacket(ByVal packetReader As PacketReader, ByVal c As MapleClient)
+    Sub HandlePacket(ByVal Data As Byte(), ByVal c As MapleClient)
+        Dim packetReader As New PacketReader(Data)
         Dim pHeader As Short = packetReader.ReadShort
         Dim handler = Nothing
         Select Case pHeader
             Case LOGIN_PASSWORD
                 handler = New LoginHandler(packetReader, c)
-            Case SERVERLIST_REQUEST,SERVERLIST_REREQUEST
+            Case SERVERLIST_REQUEST, SERVERLIST_REREQUEST
                 handler = New ServerlistRequestHandler(packetReader, c)
             Case SERVERSTATUS_REQUEST
                 handler = New ServerStatusRequestHandler(packetReader, c)
@@ -52,8 +54,10 @@ Public Class RecvPacketHandler
                 handler = New ChangeChannelHandler(packetReader, c)
             Case CHANGE_MAP
                 handler = New ChangeMapHandler(packetReader, c)
+            Case USE_INNER_PORTAL 'Will be used in my ab system
             Case Else
                 Console.WriteLine("[WARNING] Unhandled Header({0})", Hex(pHeader))
+                Console.WriteLine(ByteArrayToStr(Data))
         End Select
     End Sub
 
