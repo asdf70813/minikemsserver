@@ -24,4 +24,14 @@ Public Class MapleLife
     Public rx0 As Integer
     Public rx1 As Integer
     Public f As Integer = 0
+    Public Controller As MapleCharacter = Nothing
+    Public stance As Integer = 5
+
+    Public Sub setControl(ByVal player As MapleCharacter)
+        Controller = player
+        If type.Equals("m") Then
+            player.client.SendPacket(MaplePacketHandler.controlMob(Me, True, False))
+        End If
+    End Sub
+
 End Class

@@ -21,6 +21,7 @@ Imports MapleLib.PacketLib
 Imports MapleLib.MapleCryptoLib
 Imports MinikeMSServer.Functions
 Imports MySql.Data.MySqlClient
+Imports System.Timers
 
 Public NotInheritable Class MapleClient
 #Region "IDisposable"
@@ -63,6 +64,10 @@ Public NotInheritable Class MapleClient
     Public pic As String
     Public specialID As Integer
     Public cloned As Boolean = False
+    Public PingBuffer As Integer() = New Integer() {0, 0, 0, 0}
+    Public ReceivedPong As Boolean = False
+    Public lastPingSend As Long
+    Public timesWithoutPong As Byte = 0
 
     Public Sub New(ByVal pSocket As Socket, Optional ByVal _cloned As Boolean = False)
         cloned = _cloned
@@ -280,5 +285,26 @@ Public NotInheritable Class MapleClient
         Catch generatedExceptionName As SocketException
 
         End Try
+    End Sub
+
+    Public Sub StartPing()
+        Dim PingTimer As New System.Timers.Timer()
+        AddHandler PingTimer.Elapsed, AddressOf ping
+        ReceivedPong = True
+        PingTimer.Interval = 15000
+        PingTimer.Enabled = True
+    End Sub
+
+    Private Sub ping(ByVal source As Object, ByVal e As ElapsedEventArgs)
+        If ReceivedPong Then
+            SendPacket(New Byte() {SendHeaders.PING, 0})
+            lastPingSend = DateTime.Now.ToFileTimeUtc()
+            ReceivedPong = False
+        Else
+            timesWithoutPong += 1
+        End If
+        If timesWithoutPong > 4 Then
+            Disconnect()
+        End If
     End Sub
 End Class

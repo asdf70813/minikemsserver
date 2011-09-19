@@ -15,6 +15,5 @@
 
 Public Class MapleMob
     Inherits MapleLife
-    Public stance As Integer = 5
-    Public Controller As MapleCharacter = Nothing
+    Public aggro As Boolean = False
 End Class

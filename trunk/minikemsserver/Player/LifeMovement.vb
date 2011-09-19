@@ -19,5 +19,7 @@ Public Interface LifeMovement
     Function getNewstate() As Byte
     Function getDuration() As Integer
     Function [getType]() As Byte
-    Sub serialize(ByVal writer As packetWriter)
+    Sub serialize(ByVal writer As PacketWriter)
 End Interface
+
+
