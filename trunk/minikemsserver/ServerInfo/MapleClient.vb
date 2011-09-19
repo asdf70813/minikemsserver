@@ -181,7 +181,7 @@ Public NotInheritable Class MapleClient
         If Not cloned Then
             Try
                 If Not IsNothing(Me.Player) Then
-                    Me.Player.disconnect()
+                    Me.Player.disconnect(False)
                 End If
             Catch ex As Exception
                 Console.WriteLine("[ERROR] Something went wrong while disconnecting player {0}", ex.ToString)

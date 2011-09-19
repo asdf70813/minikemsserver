@@ -13,27 +13,15 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Imports MapleLib.PacketLib
-
-Class ChangeMapHandler
-#Region "IDisposable"
-    Implements IDisposable
-    Private disposedValue As Boolean = False
-
-    Public Sub Dispose() Implements IDisposable.Dispose
-
-    End Sub
-#End Region
-
-    Sub New(ByVal packetReader As PacketReader, ByVal c As MapleClient)
-        packetReader.ReadByte()
-        Dim targetMapID As Integer = packetReader.ReadInt
-        Dim portal As String = packetReader.ReadMapleString
-        packetReader.ReadByte()
-        Dim weel As Boolean = packetReader.ReadShort > 0
-        Dim info As Integer() = MapleInformationProvider.Map.getPortalInfo(c.Player.Map.id, portal)
-        c.Player.warp(info(1), info(0))
-        Me.Dispose()
-    End Sub
-
+Public Class MapleLife
+    Public id As Integer
+    Public oid As Integer
+    Public type As String
+    Public pos As Point
+    Public fh As Integer
+    Public startfh As Integer
+    Public cy As Integer
+    Public rx0 As Integer
+    Public rx1 As Integer
+    Public f As Integer = 0
 End Class

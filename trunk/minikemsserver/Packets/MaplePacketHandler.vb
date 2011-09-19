@@ -629,7 +629,6 @@ Public Class MaplePacketHandler
         writer.WriteInt(0)
         writer.WriteByte(0)
         writer.WriteInt(c.Player.mapId)
-        Console.WriteLine(spawnpoint)
         writer.WriteByte(spawnpoint)
         writer.WriteShort(c.Player.curHp)
         writer.WriteByte(0)
@@ -651,6 +650,76 @@ Public Class MaplePacketHandler
         writer.WriteByte(1)
         writer.WriteBytes(ip)
         writer.WriteShort(port)
+        Return writer.ToArray
+    End Function
+
+    Public Shared Function spawnNpc(ByVal npc As MapleNpc) As Byte()
+        Dim writer As New PacketWriter
+        With writer
+            .WriteShort(SPAWN_NPC)
+            .WriteInt(npc.oid)
+            .WriteInt(npc.id)
+            .WriteShort(npc.pos.x)
+            .WriteShort(npc.cy)
+            .WriteBool(npc.f = 1)
+            .WriteShort(npc.fh)
+            .WriteShort(npc.rx0)
+            .WriteShort(npc.rx1)
+            .WriteByte(1)
+        End With
+        Return writer.ToArray
+    End Function
+
+    Public Shared Function spawnMob(ByVal mob As MapleMob, ByVal newSpawn As Boolean) As Byte()
+        Return spawnMonsterInternal(mob, False, newSpawn, False, 0, False)
+    End Function
+
+    Public Shared Function spawnMob(ByVal mob As MapleMob, ByVal newSpawn As Boolean, ByVal effect As Integer) As Byte()
+        Return spawnMonsterInternal(mob, False, newSpawn, False, effect, False)
+    End Function
+
+    Public Shared Function spawnMonsterInternal(ByVal mob As MapleMob, ByVal requestController As Boolean, ByVal newspawn As Boolean, ByVal aggro As Boolean, ByVal effect As Integer, ByVal makeInvis As Boolean) As Byte()
+        Dim writer As New PacketWriter
+        With writer
+            If makeInvis Then
+                .WriteShort(SPAWN_MONSTER_CONTROL)
+                .WriteBool(False)
+                .WriteInt(mob.oid)
+                Return writer.ToArray
+            End If
+            If requestController Then
+                .WriteShort(SPAWN_MONSTER_CONTROL)
+                .WriteByte(If(aggro, 2, 1))
+            Else
+                .WriteShort(SPAWN_MONSTER)
+            End If
+            .WriteInt(mob.oid)
+            .WriteByte(If(IsNothing(mob.Controller), 5, 1))
+            .WriteInt(mob.id)
+            For i As Integer = 1 To 15
+                .WriteByte(0)
+            Next
+            .WriteByte(&H88)
+            For i As Integer = 1 To 6
+                .WriteByte(0)
+            Next
+            .WriteShort(mob.pos.x)
+            .WriteShort(mob.pos.y)
+            .WriteByte(mob.stance)
+            .WriteShort(mob.startfh)
+            .WriteShort(mob.fh)
+            If effect > 0 Then
+                .WriteByte(effect)
+                .WriteByte(0)
+                .WriteShort(0)
+                If effect = 15 Then
+                    .WriteByte(0)
+                End If
+            End If
+            .WriteByte(If(newspawn, -2, -1))
+            .WriteByte(0) 'cpq team
+            .WriteInt(0)
+        End With
         Return writer.ToArray
     End Function
 

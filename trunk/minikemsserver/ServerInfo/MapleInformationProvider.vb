@@ -126,7 +126,9 @@ Public Class MapleInformationProvider
         End Function
     End Class
 
-    Public Class Portal
+    Public Class Map
+        Public Shared LifeStorage As New List(Of MapleLife)
+
         Public Shared Function getPortalInfo(ByVal _mapid As Integer, ByVal portalName As String) As Integer()
             Dim retVal As Integer() = New Integer() {0, 0}
             Dim mapid As String = _mapid
@@ -160,12 +162,13 @@ Public Class MapleInformationProvider
                                 End If
                             End If
                         Next
-                        For Each subChild In child.ChildNodes
-                            If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("tn") Then
-                                tn = subChild.Attributes.GetNamedItem("value").Value.ToString
-                                Exit For
-                            End If
-                        Next
+                        'For Each subChild In child.ChildNodes
+                        '    If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("tn") Then
+                        '        tn = subChild.Attributes.GetNamedItem("value").Value.ToString
+                        '        Exit For
+                        '    End If
+                        'Next
+                        tn = GetValueFromChild("tn", child)
                         For Each subChild In child.ChildNodes
                             If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("tm") Then
                                 retVal(1) = CInt(subChild.Attributes.GetNamedItem("value").Value.ToString)
@@ -216,20 +219,98 @@ Public Class MapleInformationProvider
                                 End If
                             End If
                         Next
-                        'For Each subChild In child.ChildNodes
-                        '    If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pt") Then
                         If Not pn.Equals("") Then
                             Return CInt(child.Attributes.GetNamedItem("name").Value.ToString)
                         End If
-                        'Exit For
-                        '                End If
-                        'Next
                     Next
                 End If
             Next
             Return 0
         End Function
+
+        Public Shared Function getLifeOfMap(ByVal _mapid As Integer) As List(Of MapleLife)
+            Dim ret As New List(Of MapleLife)
+            Dim mapid As String = _mapid
+            While mapid.Length < 9
+                mapid = "0" & mapid
+            End While
+            Dim startNum As Char = mapid.ToCharArray()(0)
+            Dim file = FileSearch(System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum, mapid & ".img.xml")
+            If file = "Nothing" Then
+                Console.WriteLine("[ERROR] xml not found file={0}", System.AppDomain.CurrentDomain.BaseDirectory & "wz\Map.wz\Map\Map" & startNum)
+                Return Nothing
+            End If
+            Dim xml As New XmlDocument
+            Dim nodelist As XmlNodeList
+            Dim node As XmlNode
+            Dim child As XmlNode
+            Dim subChild As XmlNode
+            Dim cur As MapleLife
+            xml.Load(file)
+            nodelist = xml.SelectNodes("/imgdir/imgdir")
+            For Each node In nodelist
+                If node.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("life") Then
+                    For Each child In node.ChildNodes
+                        cur = Nothing
+                        For Each subChild In child.ChildNodes
+                            If subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("type") Then
+                                If subChild.Attributes.GetNamedItem("value").Value.ToString.ToLower.Equals("n") Then
+                                    cur = New MapleNpc()
+                                    cur.type = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                ElseIf subChild.Attributes.GetNamedItem("value").Value.ToString.ToLower.Equals("m") Then
+                                    cur = New MapleMob()
+                                    cur.type = subChild.Attributes.GetNamedItem("value").Value.ToString
+                                End If
+                                Exit For
+                            End If
+                        Next
+                        If IsNothing(cur) Then
+                            Exit For
+                        End If
+                        cur.id = GetValueFromChild("id", child)
+                        If cur.type.Equals("n") Then
+                            Dim stor As MapleLife = fromLifeStorage(cur.id, cur.type) 'to avoid xml reading
+                            If Not IsNothing(stor) Then
+                                cur = stor
+                                GoTo retadd
+                            End If
+                        End If
+                        cur.pos = New Point(0, 0)
+                        cur.pos.x = GetValueFromChild("x", child)
+                        cur.pos.y = GetValueFromChild("y", child)
+                        cur.fh = GetValueFromChild("fh", child)
+                        cur.startfh = cur.fh
+                        cur.cy = GetValueFromChild("cy", child)
+                        cur.rx0 = GetValueFromChild("rx0", child)
+                        cur.rx1 = GetValueFromChild("rx1", child)
+                        cur.f = GetValueFromChild("f", child)
+                        LifeStorage.Add(cur)
+retadd:                 ret.Add(cur)
+                    Next
+                End If
+            Next
+            Return ret
+        End Function
+
+        Public Shared Function fromLifeStorage(ByVal id As Integer, ByVal type As String) As MapleLife
+            For Each life As MapleLife In LifeStorage
+                If life.id = id And life.type.Equals(type) Then
+                    Return life
+                    Exit For
+                End If
+            Next
+            Return Nothing
+        End Function
     End Class
+
+    Public Shared Function GetValueFromChild(ByVal name As String, ByVal child As XmlNode) As Object
+        For Each subChild In child.ChildNodes
+            If subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals(name.ToLower) Then
+                Return subChild.Attributes.GetNamedItem("value").Value.ToString
+            End If
+        Next
+        Return 0
+    End Function
 
     Public Shared Function RandomizeStat(ByVal in_val As Integer, ByVal max_range As Integer)
         Dim stat = in_val

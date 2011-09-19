@@ -78,10 +78,13 @@ Public Class MapleCharacter
         'TODO: Add inventory,keymap, etc
     End Sub
 
-    Public Sub disconnect()
+    Public Sub disconnect(ByVal killClient As Boolean)
         Me.SaveToDB(False, Me.client)
         Me.Map.RemovePlayer(Me)
         Me.client.channel.players.Remove(Me)
+        If killClient Then
+            Me.client.Disconnect()
+        End If
     End Sub
 
     Public Function SaveToDB(ByVal newchr As Boolean, ByVal c As MapleClient) As MapleCharacter
@@ -231,10 +234,11 @@ Public Class MapleCharacter
             newMap = New MapleMap(Me.mapId)
             Me.client.channel.Maps.Add(newMap)
         End If
-        newMap.AddPlayer(Me)
-        Me.Map = newMap
         Dim packet As Byte() = MaplePacketHandler.warpPlayerToMap(Me.client, spawnpoint)
         Me.client.SendPacket(packet)
+        newMap.AddPlayer(Me)
+        Me.Map = newMap
+        Me.SaveToDB(False, Me.client)
     End Sub
 
     Public Enum Jobs As Integer

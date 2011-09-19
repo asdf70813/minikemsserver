@@ -61,15 +61,14 @@ pause:  line = Console.ReadLine()
         If Not line.Contains("stop") And Not line.Contains("exit") Then
             GoTo pause
         End If
-        For Each c In Clients
-            Try
-                c.Player.SaveToDB(False, c)
-            Catch ex As Exception
-
-            End Try
+        For Each world In Worlds
+            For Each c In world.Clients
+                c.Player.disconnect(True)
+            Next
         Next
         Console.ForegroundColor = ConsoleColor.Green
-        Console.WriteLine("All players are save, you can close this now")
+        Console.WriteLine("All players are saved, you can close this now")
+        Console.ForegroundColor = Settings.textColor
         GoTo pause
     End Sub
 
