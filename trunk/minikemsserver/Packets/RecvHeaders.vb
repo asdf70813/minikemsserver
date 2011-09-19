@@ -30,4 +30,5 @@ Public Enum RecvHeaders As UShort
     MOVE_PLAYER = &H29
     GENERAL_CHAT = &H31
     FACE_EXPRESSION = &H33
+    USE_INNER_PORTAL = &H65
 End Enum

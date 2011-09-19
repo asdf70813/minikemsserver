@@ -216,11 +216,14 @@ Public Class MapleInformationProvider
                                 End If
                             End If
                         Next
-                        For Each subChild In child.ChildNodes
-                            If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pt") Then
-                                Return CInt(subChild.Attributes.GetNamedItem("value").Value.ToString)
-                            End If
-                        Next
+                        'For Each subChild In child.ChildNodes
+                        '    If Not pn.Equals("") And subChild.Attributes.GetNamedItem("name").Value.ToString.ToLower.Equals("pt") Then
+                        If Not pn.Equals("") Then
+                            Return CInt(child.Attributes.GetNamedItem("name").Value.ToString)
+                        End If
+                        'Exit For
+                        '                End If
+                        'Next
                     Next
                 End If
             Next

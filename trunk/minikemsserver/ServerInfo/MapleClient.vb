@@ -139,8 +139,7 @@ Public NotInheritable Class MapleClient
                         Else
                             _RIV.crypt(data)
                             MapleCustomEncryption.Decrypt(data)
-                            rPacket_Handler.HandlePacket(New PacketReader(data), Me)
-                            Console.WriteLine(ByteArrayToStr(data))
+                            rPacket_Handler.HandlePacket(data, Me)
                             WaitForData()
                         End If
                         Exit Select
@@ -273,10 +272,13 @@ Public NotInheritable Class MapleClient
     End Sub
 
     Public Sub SendRawPacket(ByVal buffer As Byte())
+        If mDisconnected <> 0 Then
+            Return
+        End If
         Try
             mSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, Function(ar) mSocket.EndSend(ar), Nothing)
         Catch generatedExceptionName As SocketException
-            'gets here when pressing X on maple
+
         End Try
     End Sub
 End Class

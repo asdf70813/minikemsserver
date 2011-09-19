@@ -629,6 +629,7 @@ Public Class MaplePacketHandler
         writer.WriteInt(0)
         writer.WriteByte(0)
         writer.WriteInt(c.Player.mapId)
+        Console.WriteLine(spawnpoint)
         writer.WriteByte(spawnpoint)
         writer.WriteShort(c.Player.curHp)
         writer.WriteByte(0)
