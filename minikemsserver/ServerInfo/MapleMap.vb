@@ -23,22 +23,9 @@ Public Class MapleMap
         id = mapID
         Me.life = MapleInformationProvider.Map.getLifeOfMap(id)
         For Each lifes In life
-            lifes.oid = setAndGetOID()
+            lifes.oid = life.IndexOf(lifes)
         Next
     End Sub
-
-    Public Function setAndGetOID() As Integer
-plus:   oid += 1
-        If oid > &H7FFFFFF0 Then
-            oid = 1
-        End If
-        For Each lifes In life
-            If oid - 1 = lifes.oid Then
-                GoTo plus
-            End If
-        Next
-        Return oid - 1
-    End Function
 
     Public Sub BroadCastMessage(ByVal c As MapleClient, ByVal packet As Byte())
         For Each chr As MapleCharacter In players
@@ -49,11 +36,18 @@ plus:   oid += 1
     End Sub
 
     Public Sub AddPlayer(ByVal Player As MapleCharacter)
+        Dim packet As Byte()
         For Each character In players
-            Dim packet As Byte() = MaplePacketHandler.SpawnPlayerOnMap(character.client)
-            Player.client.SendPacket(packet)
+            If character.id <> Player.id Then
+                packet = MaplePacketHandler.SpawnPlayerOnMap(character.client)
+                Player.client.SendPacket(packet)
+            End If
         Next
-        players.Add(Player)
+        packet = MaplePacketHandler.SpawnPlayerOnMap(Player.client)
+        BroadCastMessage(Player.client, packet)
+        SyncLock players
+            players.Add(Player)
+        End SyncLock
         For Each lifes As MapleLife In Me.life
             If lifes.type.Equals("n") Then
                 Player.client.SendPacket(MaplePacketHandler.spawnNpc(lifes))
@@ -61,14 +55,30 @@ plus:   oid += 1
             If lifes.type.Equals("m") Then
                 Player.client.SendPacket(MaplePacketHandler.spawnMob(lifes, True))
             End If
+            If IsNothing(lifes.Controller) Then
+                lifes.setControl(Player)
+            End If
         Next
     End Sub
 
     Public Sub RemovePlayer(ByVal player As MapleCharacter)
-        For Each character In players
-            Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(player.id)
-            character.client.SendPacket(packet)
+        For Each lifes As MapleLife In Me.life
+            If lifes.Controller.id = player.id Then
+                lifes.Controller = Nothing
+            End If
         Next
-        players.Remove(player)
+        SyncLock players
+            players.Remove(player)
+        End SyncLock
+        If players.Count > 0 Then
+            For Each lifes As MapleLife In Me.life
+                If IsNothing(lifes.Controller) Then
+                    lifes.Controller = players(0)
+                End If
+            Next
+        End If
+        Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(player.id)
+        BroadCastMessage(player.client, packet)
     End Sub
+
 End Class

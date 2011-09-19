@@ -43,6 +43,7 @@ Class PlayerLoggedinHandler
             packet = MaplePacketHandler.SpawnPlayerOnMap(c)
             c.channel.EnterMapMessage(c, packet)
             c.LoggedIn = 1
+            c.StartPing()
         Catch ex As Exception
             Dim packet As Byte()
             packet = MaplePacketHandler.getAfterLoginError(7)

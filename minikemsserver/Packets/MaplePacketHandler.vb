@@ -625,7 +625,7 @@ Public Class MaplePacketHandler
     Shared Function warpPlayerToMap(ByVal c As MapleClient, ByVal spawnpoint As Integer) As Byte()
         Dim writer As New PacketWriter
         writer.WriteShort(WARP_TO_MAP)
-        writer.WriteInt(c.channel.id)
+        writer.WriteInt(c.channel.id - 1)
         writer.WriteInt(0)
         writer.WriteByte(0)
         writer.WriteInt(c.Player.mapId)
@@ -670,6 +670,10 @@ Public Class MaplePacketHandler
         Return writer.ToArray
     End Function
 
+    Public Shared Function controlMob(ByVal mob As MapleMob, ByVal newSpawn As Boolean, ByVal aggro As Boolean) As Byte()
+        Return spawnMonsterInternal(mob, True, newSpawn, aggro, 0, False)
+    End Function
+
     Public Shared Function spawnMob(ByVal mob As MapleMob, ByVal newSpawn As Boolean) As Byte()
         Return spawnMonsterInternal(mob, False, newSpawn, False, 0, False)
     End Function
@@ -694,7 +698,7 @@ Public Class MaplePacketHandler
                 .WriteShort(SPAWN_MONSTER)
             End If
             .WriteInt(mob.oid)
-            .WriteByte(If(IsNothing(mob.Controller), 5, 1))
+            .WriteByte(1) 'If(IsNothing(mob.Controller), 5, 1)
             .WriteInt(mob.id)
             For i As Integer = 1 To 15
                 .WriteByte(0)
@@ -723,4 +727,38 @@ Public Class MaplePacketHandler
         Return writer.ToArray
     End Function
 
+    Shared Function moveMonsterResponse(ByVal oid As Integer, ByVal moveid As Short, ByVal currentMP As Integer, ByVal aggro As Boolean) As Byte()
+        Return moveMonsterResponse(oid, moveid, currentMP, aggro, 0, 0)
+    End Function
+
+    Shared Function moveMonsterResponse(ByVal oid As Integer, ByVal moveid As Short, ByVal currentMP As Integer, ByVal aggro As Boolean, ByVal skillId As Byte, ByVal skillLevel As Byte) As Byte()
+        Dim writer As New PacketWriter
+        With writer
+            .WriteShort(MOVE_MONSTER_RESPONSE)
+            .WriteInt(oid)
+            .WriteShort(moveid)
+            .WriteBool(aggro)
+            .WriteShort(currentMP)
+            .WriteByte(skillId)
+            .WriteByte(skillLevel)
+        End With
+        Return writer.ToArray
+    End Function
+
+    Shared Function moveMonster(ByVal useskill As Integer, ByVal skill_1 As Integer, ByVal skill_2 As Integer, ByVal skill_3 As Integer, ByVal skill_4 As Integer, ByVal skill_5 As Integer, ByVal oid As Integer, ByVal startPos As Point, ByVal moves As List(Of LifeMovement)) As Byte()
+        Dim writer As New PacketWriter
+        writer.WriteShort(MOVE_MONSTER)
+        writer.WriteInt(oid)
+        writer.WriteByte(0)
+        writer.WriteByte(useskill)
+        writer.WriteByte(skill_1)
+        writer.WriteByte(skill_2)
+        writer.WriteByte(skill_3)
+        writer.WriteByte(skill_4)
+        writer.WriteByte(skill_5)
+        writer.WriteShort(startPos.x)
+        writer.WriteShort(startPos.y)
+        serializeMovementList(writer, moves)
+        Return writer.ToArray
+    End Function
 End Class

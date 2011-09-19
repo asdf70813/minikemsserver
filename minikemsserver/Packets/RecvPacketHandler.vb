@@ -55,6 +55,12 @@ Public Class RecvPacketHandler
             Case CHANGE_MAP
                 handler = New ChangeMapHandler(packetReader, c)
             Case USE_INNER_PORTAL 'Will be used in my ab system
+            Case CLIENT_CONNECTED
+                c.StartPing()
+            Case PONG
+                handler = New PongHandler(c)
+            Case MOVE_LIFE
+                handler = New MoveLifeHandler(packetReader, c)
             Case Else
                 Console.WriteLine("[WARNING] Unhandled Header({0})", Hex(pHeader))
                 Console.WriteLine(ByteArrayToStr(Data))

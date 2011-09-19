@@ -32,4 +32,6 @@ Public Class Settings
     Public Shared pic As Boolean = True
     Public Shared CharacterSlots As Integer = 12
 
+    Public Shared maxAvgPing As Integer = 2500 'the max avarage ping a client should have
+
 End Class

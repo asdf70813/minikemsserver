@@ -96,6 +96,8 @@
     <Compile Include="Handlers\SelectCharHandler.vb" />
     <Compile Include="Handlers\PlayerLoggedinHandler.vb" />
     <Compile Include="Handlers\PlayerMovingHandler.vb" />
+    <Compile Include="Handlers\PongHandler.vb" />
+    <Compile Include="Handlers\MoveLifeHandler.vb" />
     <Compile Include="Player\AbsoluteLifeMovement.vb" />
     <Compile Include="Player\AbstractLifeMovement.vb" />
     <Compile Include="Player\ChairMovement.vb" />

@@ -63,13 +63,11 @@ pause:  line = Console.ReadLine()
         End If
         For Each world In Worlds
             For Each c In world.Clients
-                c.Player.disconnect(True)
+                c.Player.SaveToDB(False, c)
             Next
         Next
-        Console.ForegroundColor = ConsoleColor.Green
-        Console.WriteLine("All players are saved, you can close this now")
-        Console.ForegroundColor = Settings.textColor
-        GoTo pause
+        System.Threading.Thread.Sleep(1000)
+        LoginServer.Dispose()
     End Sub
 
     Private Sub BeginLoginListenerAccept(ByVal pArgs As SocketAsyncEventArgs)
