@@ -13,30 +13,8 @@
 '    You should have received a copy of the GNU General Public License
 '    along with MinikeMSServer.  If not, see <http://www.gnu.org/licenses/>.
 
-Public Enum SendHeaders As UShort
-    HandShake = &HE
-
-    LOGIN_STATUS = &H0
-    SERVERSTATUS = &H3
-    ALL_CHARLIST = &H8
-    AFTER_LOGIN_ERROR = &H9
-    CHANGE_CHANNEL = &H10
-    SERVERLIST = &HA
-    CHARLIST = &HB
-    SERVER_IP = &HC
-    CHAR_NAME_RESPONSE = &HD
-    ADD_NEW_CHAR_ENTRY = &HE
-    SELECT_WORLD = &H1A
-    SEND_RECOMMENDED = &H1B
-    WRONG_PIC = &H1C
-    WARP_TO_MAP = &H7D
-    SPAWN_PLAYER = &HA0
-    REMOVE_PLAYER_FROM_MAP = &HA1
-    CHATTEXT = &HA2
-    MOVE_PLAYER = &HB9
-    FACIAL_EXPRESSION = &HC1
-    SPAWN_MONSTER = &HEC
-    KILL_MONSTER = &HED
-    SPAWN_MONSTER_CONTROL = &HEE
-    SPAWN_NPC = &H101
-End Enum
+Public Class MapleMob
+    Inherits MapleLife
+    Public stance As Integer = 5
+    Public Controller As MapleCharacter = Nothing
+End Class

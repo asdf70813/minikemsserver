@@ -16,10 +16,29 @@
 Public Class MapleMap
     Public id As Integer = 0
     Private players As New List(Of MapleCharacter)
+    Public life As New List(Of MapleLife)
+    Public oid As Integer = 0
 
     Sub New(ByVal mapID As Integer)
         id = mapID
+        Me.life = MapleInformationProvider.Map.getLifeOfMap(id)
+        For Each lifes In life
+            lifes.oid = setAndGetOID()
+        Next
     End Sub
+
+    Public Function setAndGetOID() As Integer
+plus:   oid += 1
+        If oid > &H7FFFFFF0 Then
+            oid = 1
+        End If
+        For Each lifes In life
+            If oid - 1 = lifes.oid Then
+                GoTo plus
+            End If
+        Next
+        Return oid - 1
+    End Function
 
     Public Sub BroadCastMessage(ByVal c As MapleClient, ByVal packet As Byte())
         For Each chr As MapleCharacter In players
@@ -35,6 +54,14 @@ Public Class MapleMap
             Player.client.SendPacket(packet)
         Next
         players.Add(Player)
+        For Each lifes As MapleLife In Me.life
+            If lifes.type.Equals("n") Then
+                Player.client.SendPacket(MaplePacketHandler.spawnNpc(lifes))
+            End If
+            If lifes.type.Equals("m") Then
+                Player.client.SendPacket(MaplePacketHandler.spawnMob(lifes, True))
+            End If
+        Next
     End Sub
 
     Public Sub RemovePlayer(ByVal player As MapleCharacter)

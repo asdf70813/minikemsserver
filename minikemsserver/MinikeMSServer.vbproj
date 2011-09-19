@@ -106,6 +106,8 @@
     <Compile Include="Player\MapleInventory.vb" />
     <Compile Include="Player\RelativeLifeMovement.vb" />
     <Compile Include="Point.vb" />
+    <Compile Include="ServerInfo\MapleLife.vb" />
+    <Compile Include="ServerInfo\MapleNpc.vb" />
     <Compile Include="ServerInfo\MapleChannel.vb" />
     <Compile Include="ServerInfo\MapleClient.vb" />
     <Compile Include="Coordinates.vb" />
@@ -115,6 +117,7 @@
     <Compile Include="LockFreeQueue.vb" />
     <Compile Include="MySQL\MySQLCon.vb" />
     <Compile Include="ServerInfo\MapleInformationProvider.vb" />
+    <Compile Include="ServerInfo\MapleMob.vb" />
     <Compile Include="ServerInfo\MapleMap.vb" />
     <Compile Include="ServerInfo\Server.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
