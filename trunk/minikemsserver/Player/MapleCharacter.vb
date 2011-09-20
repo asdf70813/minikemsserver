@@ -48,6 +48,8 @@ Public Class MapleCharacter
     Public Position As New Point(0, 0)
     Public stance As Byte = 0
     Public Map As MapleMap = Nothing
+    Public hidden As Boolean = False
+    Public AddedToMap As Boolean = False
 
     Public Sub New(ByVal c As MapleClient, ByVal _name As String, Optional ByVal clean As Boolean = False)
         If clean Then
@@ -219,26 +221,27 @@ Public Class MapleCharacter
         Next
     End Sub
 
-    Public Sub warp(ByVal mapid As Integer, ByVal spawnpoint As Integer)
-        Me.mapId = mapid
-        Me.spawnpoint = spawnpoint
-        Me.Map.RemovePlayer(Me)
+    Public Sub warp(ByVal Player As MapleCharacter, ByVal mapid As Integer, ByVal spawnpoint As Integer)
+        Player.mapId = mapid
+        Player.spawnpoint = spawnpoint
+        Player.Map.RemovePlayer(Player)
         Dim newMap As MapleMap = Nothing
-        For Each _Map In Me.client.channel.Maps
-            If _Map.id = Me.client.Player.mapId Then
+        For Each _Map In Player.client.channel.Maps
+            If _Map.id = Player.client.Player.mapId Then
                 newMap = _Map
+                Console.WriteLine("Using the old map")
                 Exit For
             End If
         Next
         If IsNothing(newMap) Then
-            newMap = New MapleMap(Me.mapId)
-            Me.client.channel.Maps.Add(newMap)
+            newMap = New MapleMap(mapid)
+            Player.client.channel.Maps.Add(newMap)
         End If
-        Dim packet As Byte() = MaplePacketHandler.warpPlayerToMap(Me.client, spawnpoint)
+        Dim packet As Byte() = MaplePacketHandler.warpPlayerToMap(Player.client, spawnpoint)
         Me.client.SendPacket(packet)
-        newMap.AddPlayer(Me)
-        Me.Map = newMap
-        Me.SaveToDB(False, Me.client)
+        Player.Map = newMap
+        Player.SaveToDB(False, Player.client)
+        newMap.AddPlayer(Player)
     End Sub
 
     Public Enum Jobs As Integer

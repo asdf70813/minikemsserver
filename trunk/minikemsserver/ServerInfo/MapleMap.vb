@@ -35,16 +35,28 @@ Public Class MapleMap
         Next
     End Sub
 
+    Public Sub BroadCastGMMessage(ByVal c As MapleClient, ByVal packet As Byte())
+        For Each chr As MapleCharacter In players
+            If Not chr.Equals(c.Player) And chr.IsGM Then
+                chr.client.SendPacket(packet)
+            End If
+        Next
+    End Sub
+
     Public Sub AddPlayer(ByVal Player As MapleCharacter)
         Dim packet As Byte()
+        packet = MaplePacketHandler.SpawnPlayerOnMap(Player.client)
+        If Player.hidden Then
+            BroadCastGMMessage(Player.client, packet)
+        Else
+            BroadCastMessage(Player.client, packet)
+        End If
         For Each character In players
             If character.id <> Player.id Then
                 packet = MaplePacketHandler.SpawnPlayerOnMap(character.client)
                 Player.client.SendPacket(packet)
             End If
         Next
-        packet = MaplePacketHandler.SpawnPlayerOnMap(Player.client)
-        BroadCastMessage(Player.client, packet)
         SyncLock players
             players.Add(Player)
         End SyncLock
@@ -55,30 +67,42 @@ Public Class MapleMap
             If lifes.type.Equals("m") Then
                 Player.client.SendPacket(MaplePacketHandler.spawnMob(lifes, True))
             End If
-            If IsNothing(lifes.Controller) Then
+            If IsNothing(lifes.getController) Then
                 lifes.setControl(Player)
             End If
         Next
     End Sub
 
     Public Sub RemovePlayer(ByVal player As MapleCharacter)
-        For Each lifes As MapleLife In Me.life
-            If lifes.Controller.id = player.id Then
-                lifes.Controller = Nothing
+        Dim packet As Byte()
+        For Each character In players
+            If character.id Then
+                packet = MaplePacketHandler.RemovePlayerFromMap(character.id)
+                player.client.SendPacket(packet)
             End If
         Next
         SyncLock players
             players.Remove(player)
         End SyncLock
+        packet = MaplePacketHandler.RemovePlayerFromMap(player.id)
+        If player.hidden Then
+            BroadCastGMMessage(player.client, packet)
+        Else
+            BroadCastMessage(player.client, packet)
+        End If
+        player.client.SendPacket(MaplePacketHandler.RemovePlayerFromMap(player.id))
+        For Each lifes As MapleLife In Me.life
+            If lifes.getController.id = player.id Then
+                lifes.removeControl()
+            End If
+        Next
         If players.Count > 0 Then
             For Each lifes As MapleLife In Me.life
-                If IsNothing(lifes.Controller) Then
-                    lifes.Controller = players(0)
+                If IsNothing(lifes.getController) Then
+                    lifes.setControl(players(0))
                 End If
             Next
         End If
-        Dim packet As Byte() = MaplePacketHandler.RemovePlayerFromMap(player.id)
-        BroadCastMessage(player.client, packet)
     End Sub
 
 End Class

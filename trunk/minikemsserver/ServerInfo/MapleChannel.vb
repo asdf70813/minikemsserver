@@ -19,23 +19,6 @@ Public Class MapleChannel
     Public players As New List(Of MapleCharacter)
     Public Maps As New List(Of MapleMap)
 
-    Public Sub EnterMapMessage(ByVal c As MapleClient, ByVal packet As Byte())
-        Dim curMap As MapleMap = Nothing
-        For Each map In Maps
-            If map.id = c.Player.mapId Then
-                curMap = map
-                Exit For
-            End If
-        Next
-        If IsNothing(curMap) Then
-            curMap = New MapleMap(c.Player.mapId)
-            Maps.Add(curMap)
-        End If
-        curMap.BroadCastMessage(c, packet)
-        curMap.AddPlayer(c.Player)
-        c.Player.Map = curMap
-    End Sub
-
     Public Function getPlayerByname(ByVal name As String) As MapleCharacter
         For Each player In players
             If player.Name.ToLower.Equals(name) Then
