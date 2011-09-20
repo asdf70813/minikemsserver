@@ -24,7 +24,7 @@ Public Class MapleLife
     Public rx0 As Integer
     Public rx1 As Integer
     Public f As Integer = 0
-    Public Controller As MapleCharacter = Nothing
+    Private Controller As MapleCharacter = Nothing
     Public stance As Integer = 5
 
     Public Sub setControl(ByVal player As MapleCharacter)
@@ -33,5 +33,13 @@ Public Class MapleLife
             player.client.SendPacket(MaplePacketHandler.controlMob(Me, True, False))
         End If
     End Sub
+
+    Public Sub removeControl()
+        Controller = Nothing
+    End Sub
+
+    Public Function getController() As MapleCharacter
+        Return Controller
+    End Function
 
 End Class

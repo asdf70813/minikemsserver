@@ -32,7 +32,7 @@ Class ChangeMapHandler
         packetReader.ReadByte()
         Dim weel As Boolean = packetReader.ReadShort > 0
         Dim info As Integer() = MapleInformationProvider.Map.getPortalInfo(c.Player.Map.id, portal)
-        c.Player.warp(info(1), info(0))
+        c.Player.warp(c.Player, info(1), info(0))
         Me.Dispose()
     End Sub
 

@@ -181,13 +181,14 @@ Public Class MaplePacketHandler
         writer.WriteByte(chr.Gender)
         writer.WriteByte(chr.skincolor)
         writer.WriteInt(chr.face)
-        writer.WriteBool(mega)
+        writer.WriteByte(If(mega, 0, 1))
         writer.WriteInt(chr.hair)
         addCharEquips(writer, chr)
     End Sub
 
     Private Shared Sub addCharEquips(ByVal writer As PacketWriter, ByVal chr As MapleCharacter)
         'TODO: MaskedEquip = Cash????
+        chr.Inventory.SplitItems()
         If Not IsNothing(chr.Inventory) Then
             For Each item As MapleInventory.Items In chr.Inventory.Equiped
                 'If item.position <> -11 Then
@@ -500,13 +501,16 @@ Public Class MaplePacketHandler
             Next
             .WriteInt(0)
             .WriteShort(0)
+            
+
             .WriteByte(&HFC)
             .WriteBool(True)
 
             'TODO: Morph/buffs
+            Dim buffmask As Long = 0
             .WriteInt(0)
-            .WriteInt(CInt((0 >> 32) And &HFFFFFFFFL))
-            .WriteInt(CInt(0 And &HFFFFFFFFL))
+            .WriteInt(CInt((buffmask >> 32) And &HFFFFFFFFL))
+            .WriteInt(CInt(buffmask And &HFFFFFFFFL))
 
             Dim CHAR_MAGIC_SPAWN = Random()
             For i = 1 To 6
